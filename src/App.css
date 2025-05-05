@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#root {
+  width: 100%;
+}
+
+body {
+  font-family: 'Roboto', 'Segoe UI', 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #333;
+  line-height: 1.5;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
+
+/* Correction des couleurs pour correspondre à la maquette Figma */
+h1, h2, h3, h4, h5, h6 {
+  color: #333333;
+}
+
+/* Styles pour les liens */
+a {
+  text-decoration: none;
+  color: #0056D2;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #004bb9;
+}
+
+/* Styles pour les boutons */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Styles pour les conteneurs */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Styles pour les sections */
+section {
+  margin: 2rem 0;
+}
+
+/* Styles pour les images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Styles pour les formulaires */
+input, textarea, select {
+  font-family: inherit;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+}
