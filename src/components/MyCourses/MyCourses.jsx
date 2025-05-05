@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import javaImage from '../../assets/myCoursesImage.png';
+import { useNavigate } from 'react-router-dom';
 
 const MyCoursesContainer = styled.div`
   width: 100%;
@@ -33,6 +34,8 @@ const TabText = styled.h2`
   color: ${props => props.active ? '#0056D2' : '#737373'};
   margin: 0;
   padding: 0.5rem 0;
+  cursor: pointer;
+  clickable: true;
 `;
 
 const TabIndicator = styled.div`
@@ -226,18 +229,24 @@ const coursesData = [
 ];
 
 const MyCourses = () => {
+  const navigate = useNavigate();
+  const navToAvailabelCourses = () => {
+    navigate('/available-courses');
+  };
   return (
     <MyCoursesContainer>
       <SectionHeader>
-        <HeaderTab>
-          <TabText active={false}>Certificates</TabText>
-          <TabIndicator active={false} />
-        </HeaderTab>
-        <HeaderTab>
-          <TabText active={true}>My courses</TabText>
-          <TabIndicator active={true} />
-        </HeaderTab>
-      </SectionHeader>
+       
+       <HeaderTab>
+         <TabText onClick={()=>navToAvailabelCourses()} active={false}>Available courses</TabText>
+         <TabIndicator active={false} />
+       </HeaderTab>
+      <HeaderTab> 
+         <TabText active={true}>My courses</TabText>
+         <TabIndicator active={true} />
+      </HeaderTab>
+       
+     </SectionHeader>
       
       <Divider />
       

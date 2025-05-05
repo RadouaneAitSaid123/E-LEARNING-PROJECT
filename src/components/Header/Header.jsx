@@ -40,8 +40,7 @@ const SearchBar = styled.div`
   border-radius: 25px;
   padding: 0.5rem 1rem;
   width: 350px;
-  margin-left: 4rem;
-  margin-right: 10rem;
+  margin: auto 2rem auto 2rem;
 
   input {
     border: none;
@@ -73,7 +72,7 @@ const NavLinks = styled.div`
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #e0e0e0;
-  margin: 1rem 4rem 0 4rem;
+  margin: 1rem 7rem 0 7rem;
 `;
 
 const NavLink = styled(Link)`
@@ -122,7 +121,7 @@ const Header = () => {
         
         <NavLinks>
           <NavLink to="/">Online Degrees</NavLink>
-          <NavLink to="/certificates">Certificates</NavLink>
+          <NavLink to="/available-courses">Available courses</NavLink>
           <NavLink to="/my-courses">My Courses</NavLink>
           <NavLink to="/login">Log in</NavLink>
           <SignUpButton to="/signup">Sign up</SignUpButton>

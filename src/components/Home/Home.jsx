@@ -17,6 +17,7 @@ import IBMLogo from '../../assets/IBMLogo.png';
 import googleLogo from '../../assets/googleLogo.png';
 import oracleLogo from '../../assets/oracleLogo.png';
 import metaLogo from '../../assets/metaLogo.png';
+import { useNavigate } from 'react-router-dom';
 const HomeContainer = styled.div`
   width: 100%;
   display: flex;
@@ -30,7 +31,7 @@ const HeroSection = styled.section`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1165px;
   width: 100%;
   margin: 3rem auto;
   padding: 0 1rem;
@@ -42,7 +43,7 @@ const HeroSection = styled.section`
 `;
 
 const HeroContent = styled.div`
-  flex: 1;
+  flex: 0.5;
 `;
 
 const HeroTitle = styled.h1`
@@ -103,7 +104,7 @@ const SecondaryButton = styled.button`
 `;
 
 const HeroImage = styled.div`
-  flex: 1;
+  flex: 0.5;
   display: flex;
   justify-content: center;
   height: 250px;
@@ -305,6 +306,7 @@ const ExploreSection = styled.section`
   margin: 0 auto;
 `;
 
+
 const CoursesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -371,6 +373,11 @@ const ArrowIcon = styled.span`
 `;
 
 const Home = () => {
+    const navigate = useNavigate();
+const handleExploreCourses = () => {
+    
+    navigate('/available-courses');
+  };
   return (
     <HomeContainer>
       {/* Hero Section */}
@@ -383,7 +390,7 @@ const Home = () => {
           </HeroDescription>
           <ButtonGroup>
             <PrimaryButton>Join for free</PrimaryButton>
-            <SecondaryButton>Explore Courses</SecondaryButton>
+            <SecondaryButton onClick={() => handleExploreCourses()}>Explore Courses</SecondaryButton>
           </ButtonGroup>
         </HeroContent>
         <HeroImage>
