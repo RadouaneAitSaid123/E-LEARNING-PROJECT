@@ -2,6 +2,11 @@ import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import javaImage from '../../assets/myCoursesImage.png';
+import metaLogo from '../../assets/metaLogo.png';
+import ibmLogo from '../../assets/IBMLogo.png';
+import penselvLogo from '../../assets/penselvLogo.png';
+import californiaLogo from '../../assets/californiaLogo.png';
+import googleLogo from '../../assets/googleLogo.png';
 
 const AvailableCoursesContainer = styled.div`
   width: 100%;
@@ -145,12 +150,20 @@ const CourseContent = styled.div`
   flex: 1;
 `;
 
-const CourseProvider = styled.p`
+const CourseProvider = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-family: 'Montserrat', sans-serif;
   font-weight: 600;
   font-size: 14px;
   color: #737373;
   margin: 0;
+`;
+const ProviderLogo = styled.img`
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 `;
 
 const CourseTitle = styled.h3`
@@ -266,6 +279,7 @@ const availableCoursesData = [
     id: 1,
     title: 'Introduction à la Programmation Java',
     provider: 'Université de Pennsylvanie',
+    providerLogo: penselvLogo,
     image: javaImage,
     description: 'Apprenez les bases de la programmation orientée objet avec Java dans ce cours complet.',
     duration: '8 semaines',
@@ -277,6 +291,7 @@ const availableCoursesData = [
     id: 2,
     title: 'Développement Front-End avec React',
     provider: 'Meta',
+    providerLogo: metaLogo,
     image: javaImage,
     description: 'Maîtrisez React et créez des interfaces utilisateur modernes et réactives.',
     duration: '10 semaines',
@@ -288,6 +303,7 @@ const availableCoursesData = [
     id: 3,
     title: 'Science des Données et Big Data',
     provider: 'IBM',
+    providerLogo: ibmLogo,
     image: javaImage,
     description: 'Explorez les concepts fondamentaux de la science des données et du big data.',
     duration: '12 semaines',
@@ -299,6 +315,7 @@ const availableCoursesData = [
     id: 4,
     title: 'Anglais des Affaires',
     provider: 'Université de Californie',
+    providerLogo: californiaLogo,
     image: javaImage,
     description: 'Améliorez vos compétences en anglais pour le monde professionnel et des affaires.',
     duration: '6 semaines',
@@ -310,6 +327,7 @@ const availableCoursesData = [
     id: 5,
     title: 'HTML, CSS et JavaScript pour Débutants',
     provider: 'IBM',
+    providerLogo: ibmLogo,
     image: javaImage,
     description: 'Commencez votre parcours de développeur web avec les technologies fondamentales.',
     duration: '8 semaines',
@@ -320,7 +338,8 @@ const availableCoursesData = [
   {
     id: 6,
     title: 'Intelligence Artificielle et Machine Learning',
-    provider: 'Stanford',
+    provider: 'Google',
+    providerLogo: googleLogo,
     image: javaImage,
     description: 'Découvrez les principes et applications de l\'IA et du machine learning.',
     duration: '14 semaines',
@@ -374,7 +393,12 @@ const AvailableCourses = () => {
               <img src={course.image} alt={course.title} />
             </CourseImage>
             <CourseContent>
-              <CourseProvider>{course.provider}</CourseProvider>
+              <CourseProvider>
+                <ProviderLogo src={course.providerLogo} alt={course.provider}>
+                 
+                </ProviderLogo>
+                {course.provider}
+                </CourseProvider>
               <CourseTitle>{course.title}</CourseTitle>
               <CourseDescription>{course.description}</CourseDescription>
               <CourseStats>
