@@ -15,7 +15,7 @@ const HeaderContainer = styled.header`
 const NavContainer = styled.div`
   display: flex;
   align-items: center;
-  max-width: 1200px;
+  max-width: 1300px;
   margin: 0 auto;
   padding: 0 1rem;
   justify-content: center;
@@ -73,7 +73,7 @@ const NavLinks = styled.div`
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #e0e0e0;
-  margin: 1rem 8rem 0 8rem;
+  margin: 1rem 4rem 0 4rem;
 `;
 
 const NavLink = styled(Link)`
@@ -122,7 +122,8 @@ const Header = () => {
         
         <NavLinks>
           <NavLink to="/">Online Degrees</NavLink>
-          <NavLink to="/">Careers</NavLink>
+          <NavLink to="/certificates">Certificates</NavLink>
+          <NavLink to="/my-courses">My Courses</NavLink>
           <NavLink to="/login">Log in</NavLink>
           <SignUpButton to="/signup">Sign up</SignUpButton>
         </NavLinks>
