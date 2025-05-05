@@ -166,7 +166,6 @@ const ProgressButton = styled.div`
   `;
 
 const ActionButton = styled.button`
-
   background-color: #0056D2;
   color: white;
   border: none;
@@ -184,6 +183,7 @@ const ActionButton = styled.button`
     color: white;
   }
 `;
+
 
 const coursesData = [
   {
@@ -230,8 +230,13 @@ const coursesData = [
 
 const MyCourses = () => {
   const navigate = useNavigate();
+  
   const navToAvailabelCourses = () => {
     navigate('/available-courses');
+  };
+  
+  const navToCourseView = (courseId) => {
+    navigate(`/course-view/${courseId}`);
   };
   return (
     <MyCoursesContainer>
@@ -267,8 +272,8 @@ const MyCourses = () => {
             </CourseContent>
             <ProgressButton>
                 <ProgressText>{course.progress}%</ProgressText>
-                <ActionButton>
-                {course.completed ? 'Completed' : 'Continue'}
+                <ActionButton onClick={() => course.completed ? null : navToCourseView(course.id)}>
+                  {course.completed ? 'Completed' : 'Continue'}
                 </ActionButton>
             </ProgressButton>
           </CourseCard>

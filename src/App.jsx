@@ -7,6 +7,7 @@ import Certificates from './components/Certificates/Certificates'
 import MyCourses from './components/MyCourses/MyCourses'
 import AvailableCourses from './components/AvailableCourses/AvailableCourses'
 import CourseCheckout from './components/CourseCheckout/CourseCheckout'
+import CourseView from './components/CourseView/CourseView'
 import './App.css'
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/my-courses" element={<MyCourses />} />
             <Route path="/available-courses" element={<AvailableCourses />} />
             <Route path="/course-checkout" element={<CourseCheckout />} />
+            <Route path="/course-view/:courseId" element={<CourseView />} />
           </Routes>
         </main>
         <Footer />
