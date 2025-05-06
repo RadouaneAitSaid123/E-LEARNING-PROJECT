@@ -8,6 +8,7 @@ import AvailableCourses from './components/AvailableCourses/AvailableCourses'
 import CourseCheckout from './components/CourseCheckout/CourseCheckout'
 import CourseDetails from './components/CourseDetails/CourseDetails'
 import CourseView from './components/CourseView/CourseView'
+import Certificate from './components/Certificate/Certificate'
 import Register from './components/Register/Register'
 import Login from './components/Login/Login'
 import './App.css'
@@ -56,6 +57,12 @@ function App() {
         <Route path="/course-view/:courseId" element={
           <>
             <CourseView />
+          </>
+        } />
+        <Route path="/certificate/:courseId" element={
+          <>
+            <Header />
+            <Certificate />
           </>
         } />
       </Routes>

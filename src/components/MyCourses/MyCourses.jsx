@@ -238,6 +238,9 @@ const MyCourses = () => {
   const navToCourseView = (courseId) => {
     navigate(`/course-view/${courseId}`);
   };
+  const navToCertificate = (courseId) => {
+    navigate(`/certificate/${courseId}`);
+  };
   return (
     <MyCoursesContainer>
       <SectionHeader>
@@ -272,7 +275,7 @@ const MyCourses = () => {
             </CourseContent>
             <ProgressButton>
                 <ProgressText>{course.progress}%</ProgressText>
-                <ActionButton onClick={() => course.completed ? null : navToCourseView(course.id)}>
+                <ActionButton onClick={() => course.completed ? navToCertificate(course.id) : navToCourseView(course.id)}>
                   {course.completed ? 'Completed' : 'Continue'}
                 </ActionButton>
             </ProgressButton>

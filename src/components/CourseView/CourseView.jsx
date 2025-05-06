@@ -365,6 +365,28 @@ const LessonDuration = styled.span`
   color: #737373;
 `;
 
+const CertificateButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #0056D2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0 auto;
+  
+  &:hover {
+    background-color: #004bb9;
+  }
+`;
+
 // Sample data for modules
 /*const moduleData = [
   {
@@ -603,6 +625,7 @@ const CourseView = () => {
                 <p>
                   By the end of this course, you'll be able to build, deploy, and manage containerized applications using industry-standard tools and best practices.
                 </p>
+                
               </CourseDescription>
             )}
             {activeTab === 'qa' && <div>Q&A content goes here</div>}
