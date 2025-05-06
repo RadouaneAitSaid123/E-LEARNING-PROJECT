@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faShare, faEllipsisV, faCheck, faClock, faUser, faChalkboardTeacher, faGraduationCap, faStar, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faClock, faUser, faChalkboardTeacher, faGraduationCap, faStar, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import javaImage from '../../assets/myCoursesImage.png';
 
 const CourseDetailsContainer = styled.div`
@@ -10,55 +10,6 @@ const CourseDetailsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const HeaderBar = styled.div`
-  width: 100%;
-  background-color: #0056D2;
-  padding: 1rem 0;
-  color: white;
-`;
-
-const HeaderContent = styled.div`
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const BreadcrumbNav = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-`;
-
-const HeaderActions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-`;
-
-const ShareButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
-`;
-
-const OptionsButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
 `;
 
 const MainContent = styled.div`
@@ -347,65 +298,44 @@ const CourseDetails = () => {
   const modulesData = [
     {
       id: 1,
-      title: 'Module 1: Introduction à Java',
+      title: 'Module 1: Introduction to Java',
       lessons: [
-        { id: 1, title: 'Qu\'est-ce que Java?', duration: '15 min' },
-        { id: 2, title: 'Installation de l\'environnement de développement', duration: '20 min' },
-        { id: 3, title: 'Votre premier programme Java', duration: '25 min' }
+        { id: 1, title: 'What is Java?', duration: '15 min' },
+        { id: 2, title: 'Installing the development environment', duration: '20 min' },
+        { id: 3, title: 'Your first Java program', duration: '25 min' }
       ]
     },
     {
       id: 2,
-      title: 'Module 2: Variables et Types de Données',
+      title: 'Module 2: Variables and Data Types',
       lessons: [
-        { id: 1, title: 'Types primitifs en Java', duration: '20 min' },
-        { id: 2, title: 'Déclaration et initialisation des variables', duration: '15 min' },
-        { id: 3, title: 'Conversion de types', duration: '20 min' }
+        { id: 1, title: 'Primitive Types in Java', duration: '20 min' },
+        { id: 2, title: 'Declaration and initialization of variables', duration: '15 min' },
+        { id: 3, title: 'Type conversion', duration: '20 min' }
       ]
     },
     {
       id: 3,
-      title: 'Module 3: Structures de Contrôle',
+      title: 'Module 3: Control Structures',
       lessons: [
-        { id: 1, title: 'Instructions conditionnelles (if, else, switch)', duration: '25 min' },
-        { id: 2, title: 'Boucles (for, while, do-while)', duration: '30 min' },
-        { id: 3, title: 'Instructions de saut (break, continue)', duration: '15 min' }
+        { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+        { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+        { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
       ]
     }
   ];
   
   // Données simulées pour les résultats d'apprentissage
   const learningOutcomes = [
-    'Comprendre les concepts fondamentaux de la programmation orientée objet',
-    'Maîtriser la syntaxe et les structures de base de Java',
-    'Créer des applications Java simples mais fonctionnelles',
-    'Comprendre comment déboguer et tester des programmes Java',
-    'Appliquer les bonnes pratiques de programmation en Java'
+    'Understand the fundamental concepts of object-oriented programming',
+'Master the basic syntax and structures of Java',
+'Create simple yet functional Java applications',
+'Understand how to debug and test Java programs',
+'Apply good programming practices in Java'
   ];
   
   return (
     <CourseDetailsContainer>
-      <HeaderBar>
-        <HeaderContent>
-          <BreadcrumbNav>
-            <FontAwesomeIcon icon={faHome} />
-            <span>&gt;</span>
-            <span>{course.title}</span>
-          </BreadcrumbNav>
-          
-          <HeaderActions>
-            <ShareButton>
-              <FontAwesomeIcon icon={faShare} />
-              <span>Partager</span>
-            </ShareButton>
-            
-            <OptionsButton>
-              <FontAwesomeIcon icon={faEllipsisV} />
-            </OptionsButton>
-          </HeaderActions>
-        </HeaderContent>
-      </HeaderBar>
-      
       <MainContent>
         <LeftPanel>
           <CourseImage>
@@ -432,22 +362,22 @@ const CourseDetails = () => {
               <StatIcon>
                 <FontAwesomeIcon icon={faUser} />
               </StatIcon>
-              <StatText>{course.students} étudiants</StatText>
+              <StatText>{course.students} students</StatText>
             </StatItem>
             <StatItem>
               <StatIcon>
                 <FontAwesomeIcon icon={faStar} />
               </StatIcon>
-              <StatText>4.8 (256 avis)</StatText>
+              <StatText>4.8 (256 notice)</StatText>
             </StatItem>
           </CourseStats>
           
           <CourseDescription>
             <p>{course.description}</p>
-            <p>Ce cours complet vous guidera à travers les concepts fondamentaux de Java, de l'installation de l'environnement de développement à la création d'applications fonctionnelles. Vous apprendrez les principes de la programmation orientée objet, la syntaxe Java, et les meilleures pratiques de développement.</p>
+            <p>This comprehensive course will guide you through the fundamentals of Java, from setting up the development environment to creating functional applications. You'll learn the principles of object-oriented programming, Java syntax, and development best practices.</p>
           </CourseDescription>
           
-          <SectionTitle>Ce que vous apprendrez</SectionTitle>
+          <SectionTitle>What you will learn</SectionTitle>
           <LearningOutcomes>
             {learningOutcomes.map((outcome, index) => (
               <OutcomeItem key={index}>
@@ -463,39 +393,39 @@ const CourseDetails = () => {
         <RightPanel>
           <PriceCard>
             <PriceValue>{course.price}</PriceValue>
-            <EnrollButton onClick={handleEnrollClick}>S'inscrire maintenant</EnrollButton>
+            <EnrollButton onClick={handleEnrollClick}>Register now</EnrollButton>
             
             <CourseIncludes>
-              <SectionTitle>Ce cours inclut :</SectionTitle>
+              <SectionTitle>This course includes :</SectionTitle>
               <IncludeItem>
                 <IncludeIcon>
                   <FontAwesomeIcon icon={faClock} />
                 </IncludeIcon>
-                <IncludeText>Accès à vie</IncludeText>
+                <IncludeText>Lifetime access</IncludeText>
               </IncludeItem>
               <IncludeItem>
                 <IncludeIcon>
                   <FontAwesomeIcon icon={faGraduationCap} />
                 </IncludeIcon>
-                <IncludeText>Certificat d'achèvement</IncludeText>
+                <IncludeText>Certificate of Completion</IncludeText>
               </IncludeItem>
               <IncludeItem>
                 <IncludeIcon>
                   <FontAwesomeIcon icon={faChalkboardTeacher} />
                 </IncludeIcon>
-                <IncludeText>15 heures de contenu vidéo</IncludeText>
+                <IncludeText>15 hours of video content</IncludeText>
               </IncludeItem>
               <IncludeItem>
                 <IncludeIcon>
                   <FontAwesomeIcon icon={faUser} />
                 </IncludeIcon>
-                <IncludeText>Support instructeur</IncludeText>
+                <IncludeText>Instructor support</IncludeText>
               </IncludeItem>
             </CourseIncludes>
           </PriceCard>
           
           <ModulesCard>
-            <SectionTitle>Contenu du cours</SectionTitle>
+            <SectionTitle>Course content</SectionTitle>
             <ModulesList>
               {modulesData.map(module => (
                 <ModuleItem key={module.id}>

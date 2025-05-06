@@ -277,73 +277,73 @@ const PageButton = styled.button`
 const availableCoursesData = [
   {
     id: 1,
-    title: 'Introduction à la Programmation Java',
-    provider: 'Université de Pennsylvanie',
+    title: 'Introduction to Java Programming',
+    provider: 'University of Pennsylvania',
     providerLogo: penselvLogo,
     image: javaImage,
-    description: 'Apprenez les bases de la programmation orientée objet avec Java dans ce cours complet.',
-    duration: '8 semaines',
-    level: 'Débutant',
+    description: 'Learn the basics of object-oriented programming with Java in this comprehensive course.',
+    duration: '8 weeks',
+    level: 'Beginner',
     students: '15K',
     price: '49,99 €'
   },
   {
     id: 2,
-    title: 'Développement Front-End avec React',
+    title: 'Front-End Development with React',
     provider: 'Meta',
     providerLogo: metaLogo,
     image: javaImage,
-    description: 'Maîtrisez React et créez des interfaces utilisateur modernes et réactives.',
-    duration: '10 semaines',
-    level: 'Intermédiaire',
+    description: 'Master React and create modern, responsive user interfaces.',
+    duration: '10 weeks',
+    level: 'Intermediate',
     students: '12K',
     price: '59,99 €'
   },
   {
     id: 3,
-    title: 'Science des Données et Big Data',
+    title: 'Data Science and Big Data',
     provider: 'IBM',
     providerLogo: ibmLogo,
     image: javaImage,
-    description: 'Explorez les concepts fondamentaux de la science des données et du big data.',
-    duration: '12 semaines',
-    level: 'Avancé',
+    description: 'Explore the fundamental concepts of data science and big data.',
+    duration: '12 weeks',
+    level: 'Advanced',
     students: '8K',
     price: '69,99 €'
   },
   {
     id: 4,
-    title: 'Anglais des Affaires',
-    provider: 'Université de Californie',
+    title: 'Business English',
+    provider: 'UUniversity of California',
     providerLogo: californiaLogo,
     image: javaImage,
-    description: 'Améliorez vos compétences en anglais pour le monde professionnel et des affaires.',
-    duration: '6 semaines',
-    level: 'Intermédiaire',
+    description: 'Improve your English skills for the professional and business world.',
+    duration: '6 weeks',
+    level: 'Intermediate',
     students: '20K',
     price: '39,99 €'
   },
   {
     id: 5,
-    title: 'HTML, CSS et JavaScript pour Débutants',
+    title: 'HTML, CSS and JavaScript for Beginners',
     provider: 'IBM',
     providerLogo: ibmLogo,
     image: javaImage,
-    description: 'Commencez votre parcours de développeur web avec les technologies fondamentales.',
-    duration: '8 semaines',
-    level: 'Débutant',
+    description: 'Start your web developer journey with fundamental technologies.',
+    duration: '8 weeks',
+    level: 'Beginner',
     students: '25K',
     price: '44,99 €'
   },
   {
     id: 6,
-    title: 'Intelligence Artificielle et Machine Learning',
+    title: 'Artificial Intelligence and Machine Learning',
     provider: 'Google',
     providerLogo: googleLogo,
     image: javaImage,
-    description: 'Découvrez les principes et applications de l\'IA et du machine learning.',
-    duration: '14 semaines',
-    level: 'Avancé',
+    description: 'Discover the principles and applications of AI and machine learning.',
+    duration: '14 weeks',
+    level: 'Advanced',
     students: '10K',
     price: '79,99 €'
   }
@@ -380,12 +380,12 @@ const AvailableCourses = () => {
       
       <Divider />
       
-      <SectionTitle>Explorez nos cours</SectionTitle>
+      <SectionTitle>Explore our courses</SectionTitle>
       
       <FilterContainer>
-        <FilterButton active={true}>Tous</FilterButton>
-        <FilterButton>Développement Web</FilterButton>
-        <FilterButton>Science des Données</FilterButton>
+        <FilterButton active={true}>All</FilterButton>
+        <FilterButton>Web Development</FilterButton>
+        <FilterButton>Data Science</FilterButton>
         <FilterButton>Business</FilterButton>
         <FilterButton>Design</FilterButton>
         <FilterButton>Marketing</FilterButton>

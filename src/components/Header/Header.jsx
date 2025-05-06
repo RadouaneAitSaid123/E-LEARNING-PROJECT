@@ -4,6 +4,10 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import logoImage from '../../assets/faviconLogo.png';
+import { useState } from 'react';
+import Register from '../Register/Register'; 
+import Login from '../Login/Login';
+
 
 const HeaderContainer = styled.header`
   width: 100%;
@@ -87,6 +91,17 @@ const NavLink = styled(Link)`
   }
 `;
 
+const LogInButton = styled(Link)`
+  margin: 0 1rem;
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.9rem;
+  
+  &:hover {
+    color: #0056D2;
+  }`;
+
 const SignUpButton = styled(Link)`
   background-color: #0056D2;
   color: white;
@@ -103,8 +118,42 @@ const SignUpButton = styled(Link)`
   }
 `;
 
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  };
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
+
 const Header = () => {
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  
   return (
+    <>
     <HeaderContainer>
       <NavContainer>
         <Logo>
@@ -123,13 +172,32 @@ const Header = () => {
           <NavLink to="/">Home</NavLink>
           <NavLink to="/available-courses">Available courses</NavLink>
           <NavLink to="/my-courses">My Courses</NavLink>
-          <NavLink to="/login">Log in</NavLink>
-          <SignUpButton to="/register">Sign up</SignUpButton>
+          <LogInButton onClick={() => setShowLoginModal(true)}>Log in</LogInButton>
+          <SignUpButton onClick={() => setShowRegisterModal(true)}>Sign up</SignUpButton>
         </NavLinks>
       </NavContainer>
       <Divider />
     </HeaderContainer>
-    
+    {showRegisterModal && 
+      (
+        <ModalOverlay onClick={() => setShowRegisterModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+           <Register />
+          </ModalContent>
+        </ModalOverlay>
+      )
+    }
+
+    {showLoginModal &&
+      (
+        <ModalOverlay onClick={() => setShowLoginModal(false)}>
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            <Login />
+          </ModalContent>
+        </ModalOverlay>
+      )
+    }
+    </>
   );
 };
 

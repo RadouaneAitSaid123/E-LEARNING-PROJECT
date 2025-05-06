@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPause, faVolumeUp, faExpand, faHome, faShare, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faPlay,faChevronDown, faPause, faVolumeUp, faExpand,faChevronLeft, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import javaImage from '../../assets/myCoursesImage.png';
+import { Link } from 'react-router-dom';
 
 const CourseViewContainer = styled.div`
   width: 100%;
@@ -14,9 +14,12 @@ const CourseViewContainer = styled.div`
 
 const HeaderBar = styled.div`
   width: 100%;
+  display: flex;
+  justify-content: space-between;
   background-color: #0056D2;
   padding: 1rem 0;
   color: white;
+  height: 4rem;
 `;
 
 const HeaderContent = styled.div`
@@ -26,6 +29,7 @@ const HeaderContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 `;
 
 const BreadcrumbNav = styled.div`
@@ -42,41 +46,71 @@ const HeaderActions = styled.div`
   gap: 1.5rem;
 `;
 
+const ReturnHome = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+
+  ::after {
+    content: '';
+    margin-left: 1rem;
+    border-left: 1px solid white;
+  }
+  `
+
+  const HedearContentLeft = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  `
+
 const ProgressDropdown = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-size: 14px;
 `;
 
 const ShareButton = styled.button`
   background: none;
-  border: none;
   color: white;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
+  border: 1.5px solid white;
   font-family: 'Montserrat', sans-serif;
-  font-weight: 500;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+  }
 `;
 
 const OptionsButton = styled.button`
   background: none;
-  border: none;
   color: white;
   cursor: pointer;
+  border: 1.5px solid white;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  &:focus {
+    outline: none;
+  }
 `;
 
 const MainContent = styled.div`
   display: flex;
   width: 100%;
-  max-width: 1300px;
-  margin: 2rem auto;
   gap: 2rem;
-  padding: 0 1rem;
+  padding: 2rem;
   
   @media (max-width: 992px) {
     flex-direction: column;
@@ -248,6 +282,7 @@ const ModulesList = styled.div`
 const ModuleItem = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   padding: 1rem;
   background-color: ${props => props.active ? 'rgba(0, 86, 210, 0.1)' : '#F9F9F9'};
   border-left: 3px solid ${props => props.active ? '#0056D2' : 'transparent'};
@@ -260,11 +295,11 @@ const ModuleItem = styled.div`
   }
 `;
 
-const ModuleInfo = styled.div`
+/*const ModuleInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-`;
+`;*/
 
 const ModuleTitle = styled.h4`
   font-family: 'Montserrat', sans-serif;
@@ -274,75 +309,230 @@ const ModuleTitle = styled.h4`
   margin: 0;
 `;
 
-const ModuleDuration = styled.span`
+/*const ModuleDuration = styled.span`
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
+  font-size: 14px;
+  color: #737373;
+`;*/
+
+const ModuleIcon = styled.div`
+  transform: ${props => props.expanded ? 'rotate(180deg)' : 'rotate(0)'};
+  transition: transform 0.3s ease;
+`;
+
+const ModuleContent = styled.div`
+  padding: ${props => props.expanded ? '1rem' : '0'};
+  max-height: ${props => props.expanded ? '500px' : '0'};
+  overflow: hidden;
+  transition: all 0.3s ease;
+`;
+const ModuleHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: ${props => props.expanded ? 'rgba(0, 86, 210, 0.05)' : '#F9F9F9'};
+  cursor: pointer;
+`;
+
+
+const LessonItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-bottom: 1px solid #E0E0E0;
+  background-color: ${props => props.active? 'rgba(0, 86, 210, 0.05)' : 'transparent'};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+const LessonTitle = styled.span`
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #737373;
+`;
+
+const LessonDuration = styled.span`
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
   font-size: 14px;
   color: #737373;
 `;
 
 // Sample data for modules
-const moduleData = [
+/*const moduleData = [
   {
     id: 1,
     title: 'Section 1: Introduction - Module 1',
     duration: '40min',
-    active: true
+    active: true,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
   },
   {
     id: 2,
     title: 'Section 1: Introduction - Module 1',
     duration: '40min',
-    active: false
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
   },
   {
     id: 3,
     title: 'Section 1: Introduction - Module 1',
     duration: '40min',
-    active: false
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
   },
   {
     id: 4,
     title: 'Section 1: Introduction - Module 1',
     duration: '40min',
-    active: false
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
   },
   {
     id: 5,
     title: 'Section 1: Introduction - Module 1',
     duration: '40min',
-    active: false
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
   }
+];*/
+
+const modulesData = [
+  {
+    id: 1,
+    title: 'Module 1: Introduction to Java',
+    active: true,
+    lessons: [
+      { id: 1, title: 'What is Java?', duration: '15 min' },
+      { id: 2, title: 'Installing the development environment', duration: '20 min' },
+      { id: 3, title: 'Your first Java program', duration: '25 min' }
+    ]
+  },
+  {
+    id: 2,
+    title: 'Module 2: Variables and Data Types',
+    active: false,
+    lessons: [
+      { id: 1, title: 'Primitive Types in Java', duration: '20 min' },
+      { id: 2, title: 'Declaration and initialization of variables', duration: '15 min' },
+      { id: 3, title: 'Type conversion', duration: '20 min' }
+    ]
+  },
+  {
+    id: 3,
+    title: 'Module 3: Control Structures',
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
+  },
+
+  {
+    id: 4,
+    title: 'Module 4: Control Structures',
+    active: false,
+    lessons: [
+      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
+      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
+      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
+    ]
+  },
+
 ];
 
 const CourseView = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPlaying, setIsPlaying] = useState(false);
-  const { courseId } = useParams();
-  const navigate = useNavigate();
-  
+  const [isModuleActive, setIsModuleActive] = useState(1);
+  const [isLessonItemActive, setIsLessonItemActive] = useState(1);
+
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
+  };
+
+  const [expandedModule, setExpandedModule] = useState(1);
+  const [activeLesson, setActiveLesson] = useState(1);
+
+  const toggleModule = (moduleId) => {
+    setIsLessonItemActive(null);
+    if (expandedModule === moduleId) {
+      setExpandedModule(null);
+      setIsModuleActive(null);
+    } else {
+      setExpandedModule(moduleId);
+      setIsModuleActive(moduleId);
+    }
+  };
+
+  const toggleLesson = (moduleId, lessonId) => {
+    if(expandedModule == moduleId){
+      if (activeLesson === lessonId) {
+        setActiveLesson(null);
+        setIsLessonItemActive(null);
+      } else {
+        setActiveLesson(lessonId);
+        setIsLessonItemActive(lessonId);
+      }
+    }else{
+      setActiveLesson(lessonId);
+      setIsLessonItemActive(lessonId);
+      setExpandedModule(moduleId);
+      setIsModuleActive(moduleId);
+    }
   };
   
   return (
     <CourseViewContainer>
       <HeaderBar>
         <HeaderContent>
-          <BreadcrumbNav>
-            <FontAwesomeIcon icon={faHome} />
-            <span>&gt;</span>
-            <span>DevOps – Introduction to Docker & Kubernetes</span>
-          </BreadcrumbNav>
+          
+          <HedearContentLeft>
+            <Link to="/">
+              <ReturnHome> 
+                  <FontAwesomeIcon icon={faChevronLeft} />
+                  <span>Home</span>
+              </ReturnHome>
+            </Link>
+            <BreadcrumbNav>
+                <span>DevOps – Introduction to Docker & Kubernetes</span>
+            </BreadcrumbNav>
+          </HedearContentLeft>
           
           <HeaderActions>
             <ProgressDropdown>
               <span>Your progress</span>
-              <span>▼</span>
             </ProgressDropdown>
             
             <ShareButton>
-              <FontAwesomeIcon icon={faShare} />
               <span>Share</span>
             </ShareButton>
             
@@ -426,15 +616,34 @@ const CourseView = () => {
           <SidebarTitle>Course content</SidebarTitle>
           
           <ModulesList>
-            {moduleData.map(module => (
-              <ModuleItem key={module.id} active={module.active}>
-                <ModuleInfo>
-                  <ModuleTitle>{module.title}</ModuleTitle>
-                  <ModuleDuration>{module.duration}</ModuleDuration>
-                </ModuleInfo>
-              </ModuleItem>
-            ))}
-          </ModulesList>
+              {modulesData.map(module => (
+                <ModuleItem active={isModuleActive == module.id} key={module.id}>
+                  <ModuleHeader 
+                    expanded={expandedModule === module.id}
+                    onClick={() => toggleModule(module.id)}
+                  >
+                    <ModuleTitle>{module.title}</ModuleTitle>
+                    <ModuleIcon expanded={expandedModule === module.id}>
+                      <FontAwesomeIcon icon={faChevronDown} />
+                    </ModuleIcon>
+                  </ModuleHeader>
+                  
+                  <ModuleContent expanded={expandedModule === module.id}>
+                    {module.lessons.map(lesson => (
+                      <LessonItem 
+                        active={isLessonItemActive == lesson.id} 
+                        activeLesson={activeLesson === lesson.id}
+                        onClick={() => toggleLesson(module.id, lesson.id)}
+                        key={lesson.id}
+                      >
+                        <LessonTitle>{lesson.title}</LessonTitle>
+                        <LessonDuration>{lesson.duration}</LessonDuration>
+                      </LessonItem>
+                    ))}
+                  </ModuleContent>
+                </ModuleItem>
+              ))}
+            </ModulesList>
         </RightPanel>
       </MainContent>
     </CourseViewContainer>

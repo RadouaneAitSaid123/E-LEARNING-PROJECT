@@ -406,7 +406,7 @@ const handleExploreCourses = () => {
               <img src={featureIcon1} alt="Online Courses Feature" />
             </FeatureIcon>
             <FeatureTitle>Communication</FeatureTitle>
-            <FeatureDescription>Forume de discussion, Chat, Annonces.</FeatureDescription>
+            <FeatureDescription>Discussion Forum, Chat, Announcements.</FeatureDescription>
           </FeatureCard>
           
           <FeatureCard>
@@ -414,7 +414,7 @@ const handleExploreCourses = () => {
               <img src={featureIcon2} alt="Expert Teachers Feature" />
             </FeatureIcon>
             <FeatureTitle>Collaboration</FeatureTitle>
-            <FeatureDescription>Forume de discussion, Chat, Annonces.</FeatureDescription>
+            <FeatureDescription>Discussion Forum, Chat, Announcements.</FeatureDescription>
           </FeatureCard>
           
           <FeatureCard>
@@ -422,7 +422,7 @@ const handleExploreCourses = () => {
               <img src={featureIcon3} alt="Lifetime Access Feature" />
             </FeatureIcon>
             <FeatureTitle>Evaluation</FeatureTitle>
-            <FeatureDescription>Forume de discussion, Chat, Annonces.</FeatureDescription>
+            <FeatureDescription>Discussion Forum, Chat, Announcements.</FeatureDescription>
           </FeatureCard>
         </FeaturesContainer>
       </FeaturesSection>

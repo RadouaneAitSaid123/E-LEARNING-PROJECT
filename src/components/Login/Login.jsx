@@ -2,73 +2,19 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGoogle, faFacebook, faApple } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logoImage from '../../assets/faviconLogo.png';
-import logoRegister from '../../assets/logoRegister.png';
+import google from '../../assets/google.png';
+import facebook from '../../assets/facebook.png';
+import apple from '../../assets/apple.png';
 
 const LoginContainer = styled.div`
   display: flex;
-  min-height: 100vh;
-  background-color: #F9F9F9;
-`;
-
-const LeftPanel = styled.div`
-  flex: 1;
-  background-color: #0056D2;
-  display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 2rem;
-  color: white;
-  
-  @media (max-width: 992px) {
-    display: none;
-  }
-`;
-
-const RightPanel = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-`;
-
-const WelcomeText = styled.h1`
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 36px;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
-const SubText = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 400;
-  font-size: 18px;
-  margin-bottom: 2rem;
-  text-align: center;
-  max-width: 80%;
-`;
-
-const IllustrationImage = styled.div`
+  background-color: #ffffff;
   width: 100%;
-  max-width: 400px;
-  height: 300px;
-  border-radius: 10px;
-  margin-top: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-  }
+  padding: 2rem;
 `;
 
 const Logo = styled.div`
@@ -247,6 +193,10 @@ const SocialButton = styled.button`
   &:hover {
     background-color: #F5F5F5;
   }
+  img {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 const RegisterText = styled.p`
@@ -299,17 +249,6 @@ const Login = () => {
   
   return (
     <LoginContainer>
-      <LeftPanel>
-        <WelcomeText>Bienvenue sur E-Learning</WelcomeText>
-        <SubText>
-          Connectez-vous à votre compte pour accéder à vos cours et continuer votre apprentissage.
-        </SubText>
-        <IllustrationImage>
-          <img src={logoRegister} alt="Illustration" />
-        </IllustrationImage>
-      </LeftPanel>
-      
-      <RightPanel>
         <Logo>
           <img src={logoImage} alt="E-Learning Logo" width="40" height="40" />
           <LogoText>E-LEARNING</LogoText>
@@ -379,15 +318,15 @@ const Login = () => {
           
           <SocialButtonsContainer>
             <SocialButton>
-              <FontAwesomeIcon icon={faGoogle} />
+              <img src={google} alt='Google'></img>
               Google
             </SocialButton>
             <SocialButton>
-              <FontAwesomeIcon icon={faFacebook} />
+            <img src={facebook} alt='Facebook'></img>
               Facebook
             </SocialButton>
             <SocialButton>
-              <FontAwesomeIcon icon={faApple} />
+            <img src={apple} alt='Apple'></img>
               Apple
             </SocialButton>
           </SocialButtonsContainer>
@@ -396,7 +335,6 @@ const Login = () => {
             Vous n'avez pas de compte? <RegisterLink to="/register">S'inscrire</RegisterLink>
           </RegisterText>
         </FormContainer>
-      </RightPanel>
     </LoginContainer>
   );
 };

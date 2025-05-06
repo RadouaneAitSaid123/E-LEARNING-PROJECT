@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Home from './components/Home/Home'
-import Certificates from './components/Certificates/Certificates'
 import MyCourses from './components/MyCourses/MyCourses'
 import AvailableCourses from './components/AvailableCourses/AvailableCourses'
 import CourseCheckout from './components/CourseCheckout/CourseCheckout'
@@ -17,8 +16,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        {/*<Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />*/}
         <Route path="/" element={
           <>
             <Header />
@@ -56,9 +55,7 @@ function App() {
         } />
         <Route path="/course-view/:courseId" element={
           <>
-            <Header />
             <CourseView />
-            <Footer />
           </>
         } />
       </Routes>
