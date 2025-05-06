@@ -355,6 +355,11 @@ const AvailableCourses = () => {
   const handleEnrollClick = (course) => {
     navigate('/course-checkout', { state: { course } });
   };
+
+  const handleCourseClick = (course) => {
+    navigate(`/course-details/${course.id}`, { state: { course } });
+  };
+  
   const navToMeCourses = () => {
     navigate('/my-courses');
   };
@@ -388,7 +393,7 @@ const AvailableCourses = () => {
       
       <CoursesGrid>
         {availableCoursesData.map(course => (
-          <CourseCard key={course.id}>
+          <CourseCard key={course.id} onClick={() => handleCourseClick(course)}>
             <CourseImage>
               <img src={course.image} alt={course.title} />
             </CourseImage>
@@ -416,9 +421,12 @@ const AvailableCourses = () => {
                 </StatItem>
               </CourseStats>
             </CourseContent>
-            <CourseFooter>
+            <CourseFooter onClick={(e) => e.stopPropagation()}>
               <CoursePrice>{course.price}</CoursePrice>
-              <EnrollButton onClick={() => handleEnrollClick(course)}>S'inscrire</EnrollButton>
+              <EnrollButton onClick={(e) => {
+                e.stopPropagation();
+                handleEnrollClick(course);
+              }}>S'inscrire</EnrollButton>
             </CourseFooter>
           </CourseCard>
         ))}

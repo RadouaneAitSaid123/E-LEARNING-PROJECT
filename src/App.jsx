@@ -7,28 +7,26 @@ import Certificates from './components/Certificates/Certificates'
 import MyCourses from './components/MyCourses/MyCourses'
 import AvailableCourses from './components/AvailableCourses/AvailableCourses'
 import CourseCheckout from './components/CourseCheckout/CourseCheckout'
-import CourseView from './components/CourseView/CourseView'
+import CourseDetails from './components/CourseDetails/CourseDetails'
 import './App.css'
+import CourseView from './components/CourseView/CourseView'
 
 function App() {
   return (
     <Router>
-      <div className="app-container">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/certificates" element={<Certificates />} />
-            <Route path="/my-courses" element={<MyCourses />} />
-            <Route path="/available-courses" element={<AvailableCourses />} />
-            <Route path="/course-checkout" element={<CourseCheckout />} />
-            <Route path="/course-view/:courseId" element={<CourseView />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/available-courses" element={<AvailableCourses />} />
+        <Route path="/my-courses" element={<MyCourses />} />
+        <Route path="/course-checkout" element={<CourseCheckout />} />
+        <Route path="/course-details/:courseId" element={<CourseDetails />} />
+        <Route path="/course-view/:courseId" element={<CourseView />} />
+        {/* Autres routes existantes */}
+      </Routes>
+      <Footer />
     </Router>
-  )
+  );
 }
 
-export default App
+export default App;
