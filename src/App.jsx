@@ -8,23 +8,60 @@ import MyCourses from './components/MyCourses/MyCourses'
 import AvailableCourses from './components/AvailableCourses/AvailableCourses'
 import CourseCheckout from './components/CourseCheckout/CourseCheckout'
 import CourseDetails from './components/CourseDetails/CourseDetails'
-import './App.css'
 import CourseView from './components/CourseView/CourseView'
+import Register from './components/Register/Register'
+import Login from './components/Login/Login'
+import './App.css'
 
 function App() {
   return (
     <Router>
-      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/available-courses" element={<AvailableCourses />} />
-        <Route path="/my-courses" element={<MyCourses />} />
-        <Route path="/course-checkout" element={<CourseCheckout />} />
-        <Route path="/course-details/:courseId" element={<CourseDetails />} />
-        <Route path="/course-view/:courseId" element={<CourseView />} />
-        {/* Autres routes existantes */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={
+          <>
+            <Header />
+            <Home />
+            <Footer />
+          </>
+        } />
+        <Route path="/available-courses" element={
+          <>
+            <Header />
+            <AvailableCourses />
+            <Footer />
+          </>
+        } />
+        <Route path="/my-courses" element={
+          <>
+            <Header />
+            <MyCourses />
+            <Footer />
+          </>
+        } />
+        <Route path="/course-checkout" element={
+          <>
+            <Header />
+            <CourseCheckout />
+            <Footer />
+          </>
+        } />
+        <Route path="/course-details/:courseId" element={
+          <>
+            <Header />
+            <CourseDetails />
+            <Footer />
+          </>
+        } />
+        <Route path="/course-view/:courseId" element={
+          <>
+            <Header />
+            <CourseView />
+            <Footer />
+          </>
+        } />
       </Routes>
-      <Footer />
     </Router>
   );
 }

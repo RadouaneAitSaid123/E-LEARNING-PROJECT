@@ -120,11 +120,12 @@ const Header = () => {
         </SearchBar>
         
         <NavLinks>
-          <NavLink to="/">Online Degrees</NavLink>
+          <NavLink to="/">Home</NavLink>
           <NavLink to="/available-courses">Available courses</NavLink>
+          <NavLink to="/certificates">Certificates</NavLink>
           <NavLink to="/my-courses">My Courses</NavLink>
           <NavLink to="/login">Log in</NavLink>
-          <SignUpButton to="/signup">Sign up</SignUpButton>
+          <SignUpButton to="/register">Sign up</SignUpButton>
         </NavLinks>
       </NavContainer>
       <Divider />
