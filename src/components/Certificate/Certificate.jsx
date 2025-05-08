@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faShare} from '@fortawesome/free-solid-svg-icons';
 import pennLogo from '../../assets/penselvLogo.png';
@@ -17,36 +16,6 @@ const CertificateContainer = styled.div`
   font-family: 'Montserrat', sans-serif;
 `;
 
-const HeaderBar = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  background-color: #0056D2;
-  padding: 1rem 0;
-  color: white;
-  height: 4rem;
-  margin-bottom: 2rem;
-`;
-
-const HeaderContent = styled.div`
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-`;
-
-const ReturnButton = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  color: white;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-`;
 
 const CertificateContent = styled.div`
   max-width: 1200px;
@@ -401,13 +370,6 @@ const SignatureTitle = styled.p`
   margin: 0;
 `;
 
-const CertificateInfo = styled.div`
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 12px;
-  color: #737373;
-`;
-
 const ActionButtons = styled.div`
   display: flex;
   gap: 1rem;
@@ -444,8 +406,6 @@ const ActionButton = styled.button`
 `;
 
 const Certificate = () => {
-  const navigate = useNavigate();
-  const { courseId } = useParams();
   
   // Données du certificat basées sur l'image de référence
   const [certificateData, setCertificateData] = useState({

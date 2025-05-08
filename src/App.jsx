@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
 import Home from './components/Home/Home'
@@ -9,9 +9,12 @@ import CourseCheckout from './components/CourseCheckout/CourseCheckout'
 import CourseDetails from './components/CourseDetails/CourseDetails'
 import CourseView from './components/CourseView/CourseView'
 import Certificate from './components/Certificate/Certificate'
-import Register from './components/Register/Register'
-import Login from './components/Login/Login'
+import ProfessorNav from './components/ProfessorNav/ProfessorNav'
 import './App.css'
+import CoursesListPage from './pages/professor/CoursesListPage';
+import NewCoursePage from './pages/professor/NewCoursePage';
+import EditCoursePage from './pages/professor/EditCoursePage';
+import ProfessorDashboardPage from './pages/professor/ProfessorDashboardPage';
 
 function App() {
   return (
@@ -63,6 +66,32 @@ function App() {
           <>
             <Header />
             <Certificate />
+          </>
+        } />
+        
+        {/* Professor routes with ProfessorNav */}
+        <Route path="/professor/courses" element={
+          <>
+            <ProfessorNav />
+            <CoursesListPage />
+          </>
+        } />
+        <Route path="/professor/courses/new" element={
+          <>
+            <ProfessorNav />
+            <NewCoursePage />
+          </>
+        } />
+        <Route path="/professor/courses/edit/:id" element={
+          <>
+            <ProfessorNav />
+            <EditCoursePage />
+          </>
+        } />
+        <Route path="/professor/dashboard" element={
+          <>
+            <ProfessorNav />
+            <ProfessorDashboardPage />
           </>
         } />
       </Routes>
