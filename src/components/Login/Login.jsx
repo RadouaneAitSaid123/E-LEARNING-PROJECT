@@ -7,6 +7,7 @@ import logoImage from '../../assets/faviconLogo.png';
 import google from '../../assets/google.png';
 import facebook from '../../assets/facebook.png';
 import apple from '../../assets/apple.png';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LoginContainer = styled.div`
   display: flex;
@@ -218,35 +219,34 @@ const RegisterLink = styled(Link)`
 `;
 
 const Login = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-  
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  
+  const [role, setRole] = useState('student'); // Ajout du rôle
+  const navigate = useNavigate();
+const { login } = useAuth();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logique de connexion ici
-    console.log('Form submitted:', formData);
-    // Rediriger vers le tableau de bord
-    navigate('/my-courses');
+    
+    // Simuler une connexion réussie
+    const userData = {
+      email,
+      role, // Inclure le rôle sélectionné
+      name: email.split('@')[0] // Nom d'utilisateur simple basé sur l'email
+    };
+    
+    login(userData);
+    
+    // Rediriger en fonction du rôle
+    if (role === 'professor') {
+      navigate('/professor/courses');
+    } else {
+      navigate('/my-courses');
+    }
   };
-  
+
   return (
     <LoginContainer>
         <Logo>
@@ -264,8 +264,8 @@ const Login = () => {
                 type="email" 
                 id="email" 
                 name="email" 
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Entrez votre adresse e-mail"
                 required
               />
@@ -278,12 +278,12 @@ const Login = () => {
                   type={showPassword ? "text" : "password"} 
                   id="password" 
                   name="password" 
-                  value={formData.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="Entrez votre mot de passe"
                   required
                 />
-                <PasswordToggle type="button" onClick={toggleShowPassword}>
+                <PasswordToggle type="button" onClick={() => setShowPassword(!showPassword)}>
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </PasswordToggle>
               </PasswordInputContainer>
@@ -307,9 +307,33 @@ const Login = () => {
               </ForgotPassword>
             </RememberForgotContainer>
             
-            <LoginButton type="submit">
-              Se connecter
-            </LoginButton>
+            {/* Ajout de la sélection de rôle */}
+            <FormGroup>
+              <FormLabel>Rôle</FormLabel>
+              <select 
+                value={role} 
+                onChange={(e) => setRole(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  border: '1px solid #E0E0E0',
+                  borderRadius: '5px',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontSize: '14px',
+                  color: '#737373',
+                  backgroundColor: 'rgb(255, 255, 255)',
+                  '&:focus': {
+                    outline: 'none',
+                    borderColor: '#0056D2',
+                  },
+                }}
+              >
+                <option value="student">Étudiant</option>
+                <option value="professor">Professeur</option>
+              </select>
+            </FormGroup>
+            
+            <LoginButton type="submit">Se connecter</LoginButton>
           </form>
           
           <OrDivider>

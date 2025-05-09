@@ -44,6 +44,8 @@ const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  background-color: #f9f9f9;
+  color: #333;
   &:focus {
     outline: none;
     border-color: #4a90e2;
@@ -70,17 +72,18 @@ const ChoiceInput = styled.div`
 `;
 
 const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  background-color: #4a90e2;
+  background-color: #0056D2;
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
   &:hover {
-    background-color: #3a7bc8;
+    background-color: #004bb9;
+    color: white;
   }
 `;
 
@@ -96,12 +99,6 @@ const DangerButton = styled(SmallButton)`
   }
 `;
 
-const SuccessButton = styled(SmallButton)`
-  background-color: #2ecc71;
-  &:hover {
-    background-color: #27ae60;
-  }
-`;
 
 const NoQuestionsMessage = styled.p`
   text-align: center;

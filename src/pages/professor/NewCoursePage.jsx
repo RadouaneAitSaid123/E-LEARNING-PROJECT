@@ -7,7 +7,7 @@ import { createCourse } from '../../api/courseApi';
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 4rem;
 `;
 
 const Header = styled.div`

@@ -8,10 +8,10 @@ import { getCourses, deleteCourse } from '../../api/courseApi';
 const PageContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 4rem;
 `;
 
-const Header = styled.div`
+const Head = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,16 +24,18 @@ const Title = styled.h1`
 `;
 
 const AddButton = styled(Link)`
-  padding: 0.75rem 1.5rem;
-  background-color: #4a90e2;
+background-color: #0056D2;
   color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
   text-decoration: none;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: background-color 0.2s;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   &:hover {
-    background-color: #3a7bc8;
+    background-color: #004bb9;
+    color: white;
   }
 `;
 
@@ -105,10 +107,10 @@ const CoursesListPage = () => {
 
   return (
     <PageContainer>
-      <Header>
+      <Head>
         <Title>My Courses</Title>
         <AddButton to="/professor/courses/new">Create New Course</AddButton>
-      </Header>
+      </Head>
 
       {error && (
         <ErrorMessage>

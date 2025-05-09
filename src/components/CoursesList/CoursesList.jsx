@@ -71,20 +71,45 @@ const Button = styled.button`
 `;
 
 const EditButton = styled(Button)`
+  display: inline-block;
+  padding: 0.5rem 1rem;
   background-color: #4a90e2;
+  background-color: #0056D2;
   color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   &:hover {
-    background-color: #3a7bc8;
+    background-color: #004bb9;
+    color: white;
   }
 `;
 
 const DeleteButton = styled(Button)`
+  
+  display: inline-block;
+  padding: 0.5rem 1rem;
   background-color: #e74c3c;
   color: white;
-  
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  border: none;
+  cursor: pointer;
+
   &:hover {
     background-color: #c0392b;
+    color: white;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.5);
   }
 `;
 
@@ -108,16 +133,24 @@ const EmptyStateText = styled.p`
 
 const CreateButton = styled(Link)`
   display: inline-block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   background-color: #4a90e2;
   color: white;
   text-decoration: none;
   border-radius: 4px;
   font-weight: 600;
   transition: background-color 0.2s;
-  
+  border: none;
+  cursor: pointer;
+
   &:hover {
-    background-color: #3a7bc8;
+    background-color: #357ab8;
+    color: white;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.5);
   }
 `;
 

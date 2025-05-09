@@ -145,11 +145,7 @@ const ProfessorDashboardPage = () => {
   return (
     <DashboardContainer>
       <Header>
-        <Title>Professor Dashboard</Title>
-        <NavLinks>
-          <StyledLink to="/professor/courses">Manage Courses</StyledLink>
-          <StyledLink to="/professor/dashboard">Dashboard</StyledLink>
-        </NavLinks>
+        <PageTitle>Professor Dashboard</PageTitle>
       </Header>
 
       <StatsSummary>
@@ -193,7 +189,7 @@ const ProfessorDashboardPage = () => {
           </ChartWrapper>
         </ChartCard>
 
-        <ChartCard>
+        <ChartCard2>
           <ChartTitle>Completion Status</ChartTitle>
           <ChartWrapper>
             <Doughnut 
@@ -212,7 +208,7 @@ const ProfessorDashboardPage = () => {
               }} 
             />
           </ChartWrapper>
-        </ChartCard>
+        </ChartCard2>
       </ChartsContainer>
 
       <TableSection>
@@ -248,7 +244,7 @@ const ProfessorDashboardPage = () => {
 const DashboardContainer = styled.div`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 4rem;
 `;
 
 const Header = styled.div`
@@ -258,29 +254,11 @@ const Header = styled.div`
   margin-bottom: 2rem;
 `;
 
-/*const Title = styled.h1`
+const PageTitle = styled.h1`
   margin: 0;
   color: #333;
-`;*/
-
-const NavLinks = styled.div`
-  display: flex;
-  gap: 1rem;
 `;
 
-const StyledLink = styled(Link)`
-  padding: 0.5rem 1rem;
-  background-color: #4a90e2;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    background-color: #3a7bc8;
-  }
-`;
 
 const StatsSummary = styled.div`
   display: grid;
@@ -325,6 +303,17 @@ const ChartCard = styled.div`
   border-radius: 8px;
   padding: 1.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  
+`;
+const ChartCard2 = styled.div`
+   background-color: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
 
 const ChartTitle = styled.h3`

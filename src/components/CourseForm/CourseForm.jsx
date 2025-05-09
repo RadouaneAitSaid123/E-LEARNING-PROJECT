@@ -10,7 +10,7 @@ const FormContainer = styled.div`
   padding: 2rem;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(206, 13, 13, 0.1);
 `;
 
 const FormTitle = styled.h2`
@@ -41,6 +41,8 @@ const Input = styled.input`
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  color: #333;
+  background-color: #f9f9f9;
   &:focus {
     outline: none;
     border-color: #4a90e2;
@@ -50,6 +52,8 @@ const Input = styled.input`
 
 const TextArea = styled.textarea`
   padding: 0.75rem;
+  color: #333;
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
@@ -63,21 +67,33 @@ const TextArea = styled.textarea`
 `;
 
 const Button = styled.button`
-  padding: 0.75rem 1.5rem;
-  background-color: #4a90e2;
+  background-color: #0056D2;
   color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
   &:hover {
-    background-color: #3a7bc8;
+    background-color: #004bb9;
+    color: white;
   }
-  &:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+`;
+const Button2 = styled(Button)`
+  background-color: #878678;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px hsla(0, 0.00%, 0.00%, 0.10);
+  
+  &:hover {
+    background-color:#6c6c5e;
+    color: white;
   }
 `;
 
@@ -313,12 +329,12 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
         </FormGroup>
 
         <ButtonGroup>
-          <Button 
+          <Button2 
             type="button" 
             onClick={() => navigate('/professor/courses')}
           >
             Cancel
-          </Button>
+          </Button2>
           <Button 
             type="submit" 
             disabled={isSubmitting}

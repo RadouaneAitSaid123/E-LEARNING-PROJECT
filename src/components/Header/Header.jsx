@@ -7,7 +7,7 @@ import logoImage from '../../assets/faviconLogo.png';
 import { useState } from 'react';
 import Register from '../Register/Register'; 
 import Login from '../Login/Login';
-
+import { useAuth } from '../../contexts/AuthContext';
 
 const HeaderContainer = styled.header`
   width: 100%;
@@ -91,6 +91,22 @@ const NavLink = styled(Link)`
   }
 `;
 
+const StyledLogoutButton = styled(NavLink)`
+  background-color: #0056D2;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    background-color: #004bb9;
+    color: white;
+  }
+`;
+
 const LogInButton = styled(Link)`
   margin: 0 1rem;
   text-decoration: none;
@@ -151,6 +167,7 @@ const ModalContent = styled.div`
 const Header = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user, isAuthenticated, isProfessor, logout } = useAuth();
   
   return (
     <>
@@ -170,33 +187,54 @@ const Header = () => {
         
         <NavLinks>
           <NavLink to="/">Home</NavLink>
-          <NavLink to="/available-courses">Available courses</NavLink>
-          <NavLink to="/my-courses">My Courses</NavLink>
-          <LogInButton onClick={() => setShowLoginModal(true)}>Log in</LogInButton>
-          <SignUpButton onClick={() => setShowRegisterModal(true)}>Sign up</SignUpButton>
+          
+          {isAuthenticated ? (
+            <>
+              {isProfessor ? (
+                <>
+                  <NavLink to="/professor/dashboard">Dashboard</NavLink>
+                  <NavLink to="/professor/courses">Mes cours</NavLink>
+                </>
+              ) : (
+                <>
+                  <NavLink to="/available-courses">Cours disponibles</NavLink>
+                  <NavLink to="/my-courses">My courses</NavLink>
+                </>
+              )}
+              <StyledLogoutButton as="button" onClick={logout}>
+                Logout
+              </StyledLogoutButton>
+            </>
+          ) : (
+            <>
+              <LogInButton onClick={() => setShowLoginModal(true)}>
+                Connexion
+              </LogInButton>
+              <SignUpButton onClick={() => setShowRegisterModal(true)}>
+                Inscription
+              </SignUpButton>
+            </>
+          )}
         </NavLinks>
       </NavContainer>
-      <Divider />
     </HeaderContainer>
-    {showRegisterModal && 
-      (
-        <ModalOverlay onClick={() => setShowRegisterModal(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-           <Register />
-          </ModalContent>
-        </ModalOverlay>
-      )
-    }
-
-    {showLoginModal &&
-      (
-        <ModalOverlay onClick={() => setShowLoginModal(false)}>
-          <ModalContent onClick={(e) => e.stopPropagation()}>
-            <Login />
-          </ModalContent>
-        </ModalOverlay>
-      )
-    }
+    <Divider />
+    
+    {showRegisterModal && (
+      <ModalOverlay onClick={() => setShowRegisterModal(false)}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Register onClose={() => setShowRegisterModal(false)} />
+        </ModalContent>
+      </ModalOverlay>
+    )}
+    
+    {showLoginModal && (
+      <ModalOverlay onClick={() => setShowLoginModal(false)}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <Login onClose={() => setShowLoginModal(false)} />
+        </ModalContent>
+      </ModalOverlay>
+    )}
     </>
   );
 };
