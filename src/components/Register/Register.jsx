@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash, faCheck } from '@fortawesome/free-solid-svg-icons';
 import logoImage from '../../assets/faviconLogo.png';
 import google from '../../assets/google.png';
 import facebook from '../../assets/facebook.png';
 import apple from '../../assets/apple.png';
+import Login from '../Login/Login';
 
 
 const RegisterContainer = styled.div`
@@ -232,7 +233,6 @@ const RequirementIcon = styled.span`
 `;
 
 const Register = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -262,10 +262,49 @@ const Register = () => {
   
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logique d'inscription ici
-    console.log('Form submitted:', formData);
-    // Rediriger vers la page de connexion ou le tableau de bord
-    navigate('/my-courses');
+    
+    // Create request object
+    const registerData = {
+      fullName: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      role: 'STUDENT' // Default role
+    };
+    
+    // Send registration request to backend
+    fetch('http://localhost:8080/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(registerData),
+    })
+      .then(async response => {
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.message || 'Registration failed');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Registration successful:', data);
+        
+        // Store token in localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify({
+          fullName: data.fullName,
+          email: data.email,
+          role: data.role
+        }));
+        
+        // Redirect to courses page
+        setToLogin(true);
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+        // Handle error (show error message to user)
+        //alert(error.message);
+      });
   };
   
   // Vérification des exigences du mot de passe
@@ -287,9 +326,16 @@ const Register = () => {
     hasSpecialChar && 
     passwordsMatch && 
     agreeTerms;
+
+  const [toLogin, setToLogin] = useState(false);
+
+  const handleLoginClick = () => {
+    setToLogin(true);
+  };
   
   return (
-    <RegisterContainer>
+    <>
+     { toLogin ? <Login/> : (<RegisterContainer>
         <Logo>
           <img src={logoImage} alt="E-Learning Logo" width="40" height="40" />
           <LogoText>E-LEARNING</LogoText>
@@ -446,10 +492,12 @@ const Register = () => {
           </SocialButtonsContainer>
           
           <LoginText>
-            Vous avez déjà un compte? <LoginLink to="/login">Se connecter</LoginLink>
+            Vous avez déjà un compte? <LoginLink onClick={() => handleLoginClick(true)}>Se connecter</LoginLink>
           </LoginText>
         </FormContainer>
-    </RegisterContainer>
+    </RegisterContainer>)}
+    </>
+  
   );
 };
 

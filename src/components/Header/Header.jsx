@@ -167,7 +167,7 @@ const ModalContent = styled.div`
 const Header = () => {
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const { user, isAuthenticated, isProfessor, logout } = useAuth();
+  const { isAuthenticated, isProfessor, logout } = useAuth();
   
   return (
     <>

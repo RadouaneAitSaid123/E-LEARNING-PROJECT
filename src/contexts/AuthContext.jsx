@@ -1,47 +1,59 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Création du contexte d'authentification
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-// Hook personnalisé pour utiliser le contexte d'authentification
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  return useContext(AuthContext);
+}
 
-export const AuthProvider = ({ children }) => {
-  // État pour stocker les informations de l'utilisateur connecté
-  const [user, setUser] = useState(null);
+export function AuthProvider({ children }) {
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier si un utilisateur est déjà connecté (localStorage)
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    // Check if user is logged in on page load
+    const user = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+    
+    if (user && token) {
+      setCurrentUser(JSON.parse(user));
     }
+    
     setLoading(false);
   }, []);
 
-  // Fonction de connexion
+  // Login function
   const login = (userData) => {
-    setUser(userData);
+    setCurrentUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    // Note: token should be set by the registration/login handlers
   };
 
-  // Fonction de déconnexion
+  // Logout function
   const logout = () => {
-    setUser(null);
+    setCurrentUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
-  // Valeur du contexte
+  // Add these computed properties
+  const isAuthenticated = !!currentUser;
+  const isProfessor = currentUser?.role === 'professor';
+  const isStudent = currentUser?.role === 'student';
+
   const value = {
-    user,
+    currentUser,
     login,
     logout,
-    loading,
-    isAuthenticated: !!user,
-    isProfessor: user?.role === 'professor',
-    isStudent: user?.role === 'student'
+    isAuthenticated,
+    isProfessor,
+    isStudent,
+    loading
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
+}
