@@ -197,13 +197,12 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <NavLink to="/available-courses">Cours disponibles</NavLink>
+                  <NavLink to="/available-courses">Available courses</NavLink>
                   <NavLink to="/my-courses">My courses</NavLink>
+                  <NavLink to="/my-accomplishments">My accomplishments</NavLink>
                 </>
               )}
-              <StyledLogoutButton as="button" onClick={logout}>
-                Logout
-              </StyledLogoutButton>
+              <StyledLogoutButton as="button" onClick={logout}>Logout</StyledLogoutButton>
             </>
           ) : (
             <>

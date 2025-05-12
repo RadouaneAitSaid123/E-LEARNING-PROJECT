@@ -38,8 +38,8 @@ export function AuthProvider({ children }) {
 
   // Add these computed properties
   const isAuthenticated = !!currentUser;
-  const isProfessor = currentUser?.role === 'professor';
-  const isStudent = currentUser?.role === 'student';
+  const isProfessor = currentUser?.role === 'PROFESSOR';
+  const isStudent = currentUser?.role === 'STUDENT';
 
   const value = {
     currentUser,

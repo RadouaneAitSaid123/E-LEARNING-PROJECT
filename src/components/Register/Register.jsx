@@ -77,6 +77,21 @@ const FormInput = styled.input`
     border-color: #0056D2;
   }
 `;
+const FormSelect = styled.select`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #E0E0E0;
+  border-radius: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
+  
+  &:focus {
+    outline: none;
+    border-color: #0056D2;
+  }
+`;
 
 const PasswordInputContainer = styled.div`
   position: relative;
@@ -237,7 +252,8 @@ const Register = () => {
     fullName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'STUDENT' // Default role
   });
   
   const [showPassword, setShowPassword] = useState(false);
@@ -268,7 +284,7 @@ const Register = () => {
       fullName: formData.fullName,
       email: formData.email,
       password: formData.password,
-      role: 'STUDENT' // Default role
+      role: formData.role
     };
     
     // Send registration request to backend
@@ -370,6 +386,18 @@ const Register = () => {
                 required
               />
             </FormGroup>
+            <FormGroup>
+              <FormLabel>Role</FormLabel>
+              <FormSelect
+                 name="role"
+                 value={formData.role}
+                 onChange={handleChange}
+                 required
+              >
+                 <option value="STUDENT">Student</option>
+                 <option value="PROFESSOR">Professor</option>
+              </FormSelect>
+              </FormGroup>
             
             <FormGroup>
               <FormLabel htmlFor="password">Mot de passe</FormLabel>

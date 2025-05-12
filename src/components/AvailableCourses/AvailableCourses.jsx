@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import javaImage from '../../assets/myCoursesImage.png';
+import { getAvailableCourses } from '../../api/availableCoursesApi';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import metaLogo from '../../assets/metaLogo.png';
 import ibmLogo from '../../assets/IBMLogo.png';
 import penselvLogo from '../../assets/penselvLogo.png';
@@ -34,9 +36,9 @@ const HeaderTab = styled.div`
 
 const TabText = styled.h2`
   font-family: 'Fira Sans', sans-serif;
-  font-weight: ${props => props.active ? '700' : '600'};
+  font-weight: ${props => props.$active ? '700' : '600'};
   font-size: 20px;
-  color: ${props => props.active ? '#0056D2' : '#737373'};
+  color: ${props => props.$active ? '#0056D2' : '#737373'};
   margin: 0;
   padding: 0.5rem 0;
   cursor: pointer;
@@ -46,7 +48,7 @@ const TabText = styled.h2`
 const TabIndicator = styled.div`
   height: 5px;
   width: 100%;
-  background-color: ${props => props.active ? '#0056D2' : 'transparent'};
+  background-color: ${props => props.$active ? '#0056D2' : 'transparent'};
   margin-top: 5px;
 `;
 
@@ -80,8 +82,8 @@ const FilterContainer = styled.div`
 `;
 
 const FilterButton = styled.button`
-  background-color: ${props => props.active ? '#0056D2' : 'white'};
-  color: ${props => props.active ? 'white' : '#737373'};
+  background-color: ${props => props.$active ? '#0056D2' : 'white'};
+  color: ${props => props.$active ? 'white' : '#737373'};
   border: 1px solid #BDBDBD;
   border-radius: 10px;
   padding: 0.5rem 1rem;
@@ -92,7 +94,7 @@ const FilterButton = styled.button`
   transition: all 0.3s ease;
   
   &:hover {
-    background-color: ${props => props.active ? '#004bb9' : '#f5f5f5'};
+    background-color: ${props => props.$active ? '#004bb9' : '#f5f5f5'};
   }
 `;
 
@@ -121,8 +123,9 @@ const CourseCard = styled.div`
   overflow: hidden;
   background-color: white;
   border: 1px solid #BDBDBD;
-  box-shadow: 0px 0px 4px 2px rgba(189, 189, 189, 0.3);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1.5rem;
   
   &:hover {
     transform: translateY(-5px);
@@ -134,6 +137,8 @@ const CourseImage = styled.div`
   height: 180px;
   width: 100%;
   overflow: hidden;
+  margin-bottom: 1rem;
+  border-radius: 8px;
   
   img {
     width: 100%;
@@ -142,13 +147,6 @@ const CourseImage = styled.div`
   }
 `;
 
-const CourseContent = styled.div`
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  flex: 1;
-`;
 
 const CourseProvider = styled.div`
   display: flex;
@@ -158,21 +156,23 @@ const CourseProvider = styled.div`
   font-weight: 600;
   font-size: 14px;
   color: #737373;
-  margin: 0;
+  margin-bottom: 0.5rem;
 `;
+
 const ProviderLogo = styled.img`
   width: 20px;
   height: 20px;
   object-fit: contain;
+  border-radius: 50%;
 `;
+
 
 const CourseTitle = styled.h3`
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   color: #252B42;
   margin: 0.5rem 0;
-  min-height: 50px;
 `;
 
 const CourseDescription = styled.p`
@@ -181,21 +181,21 @@ const CourseDescription = styled.p`
   font-size: 14px;
   color: #737373;
   margin: 0;
-  flex: 1;
+  margin-bottom: 1.5rem;
 `;
 
 const CourseStats = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 2rem;
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #E0E0E0;
+  margin-bottom: 1rem;
 `;
 
 const StatItem = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 `;
 
 const StatValue = styled.span`
@@ -212,235 +212,206 @@ const StatLabel = styled.span`
   color: #737373;
 `;
 
-const CourseFooter = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background-color: #F9F9F9;
-  border-top: 1px solid #E0E0E0;
-`;
-
 const CoursePrice = styled.div`
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 18px;
   color: #0056D2;
+  margin-top: 1rem;
 `;
 
 const EnrollButton = styled.button`
   background-color: #0056D2;
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 5px;
   padding: 0.6rem 1.2rem;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  align-self: flex-end;
+  margin-top: 1rem;
   
   &:hover {
     background-color: #004bb9;
   }
 `;
 
-const PaginationContainer = styled.div`
+const CourseFooter = styled.div`
   display: flex;
-  justify-content: center;
-  margin: 2rem 0;
-  gap: 0.5rem;
-`;
-
-const PageButton = styled.button`
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  background-color: ${props => props.active ? '#0056D2' : 'white'};
-  color: ${props => props.active ? 'white' : '#737373'};
-  border: 1px solid #BDBDBD;
-  border-radius: 5px;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background-color: ${props => props.active ? '#004bb9' : '#f5f5f5'};
-  }
+  padding: 12px 16px;
+  background-color: #e6f0ff; /* bleu clair comme sur l'image */
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
 `;
 
-// Données simulées pour les cours disponibles
-const availableCoursesData = [
-  {
-    id: 1,
-    title: 'Introduction to Java Programming',
-    provider: 'University of Pennsylvania',
-    providerLogo: penselvLogo,
-    image: javaImage,
-    description: 'Learn the basics of object-oriented programming with Java in this comprehensive course.',
-    duration: '8 weeks',
-    level: 'Beginner',
-    students: '15K',
-    price: '49,99 €'
-  },
-  {
-    id: 2,
-    title: 'Front-End Development with React',
-    provider: 'Meta',
-    providerLogo: metaLogo,
-    image: javaImage,
-    description: 'Master React and create modern, responsive user interfaces.',
-    duration: '10 weeks',
-    level: 'Intermediate',
-    students: '12K',
-    price: '59,99 €'
-  },
-  {
-    id: 3,
-    title: 'Data Science and Big Data',
-    provider: 'IBM',
-    providerLogo: ibmLogo,
-    image: javaImage,
-    description: 'Explore the fundamental concepts of data science and big data.',
-    duration: '12 weeks',
-    level: 'Advanced',
-    students: '8K',
-    price: '69,99 €'
-  },
-  {
-    id: 4,
-    title: 'Business English',
-    provider: 'UUniversity of California',
-    providerLogo: californiaLogo,
-    image: javaImage,
-    description: 'Improve your English skills for the professional and business world.',
-    duration: '6 weeks',
-    level: 'Intermediate',
-    students: '20K',
-    price: '39,99 €'
-  },
-  {
-    id: 5,
-    title: 'HTML, CSS and JavaScript for Beginners',
-    provider: 'IBM',
-    providerLogo: ibmLogo,
-    image: javaImage,
-    description: 'Start your web developer journey with fundamental technologies.',
-    duration: '8 weeks',
-    level: 'Beginner',
-    students: '25K',
-    price: '44,99 €'
-  },
-  {
-    id: 6,
-    title: 'Artificial Intelligence and Machine Learning',
-    provider: 'Google',
-    providerLogo: googleLogo,
-    image: javaImage,
-    description: 'Discover the principles and applications of AI and machine learning.',
-    duration: '14 weeks',
-    level: 'Advanced',
-    students: '10K',
-    price: '79,99 €'
-  }
-];
+
 
 const AvailableCourses = () => {
   const navigate = useNavigate();
-  
-  const handleEnrollClick = (course) => {
-    navigate('/course-checkout', { state: { course } });
+  const [activeTab, setActiveTab] = useState('availableCourses');
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        const data = await getAvailableCourses();
+        setCourses(data);
+        setError(null);
+      } catch (err) {
+        setError('Impossible de charger les cours. Veuillez réessayer plus tard.');
+        console.error('Erreur lors du chargement des cours:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
   };
 
-  const handleCourseClick = (course) => {
-    navigate(`/course-details/${course.id}`, { state: { course } });
+  const handleFilterClick = (filter) => {
+    setActiveFilter(filter);
   };
-  
-  const navToMeCourses = () => {
-    navigate('/my-courses');
+
+  const handleCourseClick = (courseId) => {
+    navigate(`/course-details/${courseId}`);
   };
-  
+
+  // Filtrer les cours selon le filtre actif
+  const filteredCourses = activeFilter === 'All' 
+    ? courses 
+    : courses.filter(course => course.category === activeFilter);
+
+  // Fonction pour obtenir le logo du fournisseur
+  const getProviderLogo = (provider) => {
+    if (!provider) return null;
+    
+    switch (provider.toLowerCase()) {
+      case 'meta': return metaLogo;
+      case 'ibm': return ibmLogo;
+      case 'google': return googleLogo;
+      case 'university of california': return californiaLogo;
+      case 'university of pennsylvania': return penselvLogo;
+      default: return null;
+    }
+  };
+
+  // Dans la partie rendu du composant, modifiez la structure de la carte :
   return (
     <AvailableCoursesContainer>
       <SectionHeader>
-       
         <HeaderTab>
-          <TabText active={true}>Available courses</TabText>
-          <TabIndicator active={true} />
-        </HeaderTab>
-        <HeaderTab>
-        <TabText onClick={() =>navToMeCourses()} active={false}>My courses</TabText>
-          <TabIndicator active={false} />
+          <TabText 
+            $active={activeTab === 'availableCourses'} 
+            onClick={() => handleTabClick('availableCourses')}
+          >
+            Available Courses
+          </TabText>
+          <TabIndicator $active={activeTab === 'availableCourses'} />
         </HeaderTab>
       </SectionHeader>
-      
       <Divider />
       
-      <SectionTitle>Explore our courses</SectionTitle>
+      <SectionTitle>Explore Our Courses</SectionTitle>
       
       <FilterContainer>
-        <FilterButton active={true}>All</FilterButton>
-        <FilterButton>Web Development</FilterButton>
-        <FilterButton>Data Science</FilterButton>
-        <FilterButton>Business</FilterButton>
-        <FilterButton>Design</FilterButton>
-        <FilterButton>Marketing</FilterButton>
+        <FilterButton 
+          $active={activeFilter === 'All'} 
+          onClick={() => handleFilterClick('All')}
+        >
+          All
+        </FilterButton>
+        <FilterButton 
+          $active={activeFilter === 'Programming'} 
+          onClick={() => handleFilterClick('Programming')}
+        >
+          Programming
+        </FilterButton>
+        <FilterButton 
+          $active={activeFilter === 'Data Science'} 
+          onClick={() => handleFilterClick('Data Science')}
+        >
+          Data Science
+        </FilterButton>
+        <FilterButton 
+          $active={activeFilter === 'Web Development'} 
+          onClick={() => handleFilterClick('Web Development')}
+        >
+          Web Development
+        </FilterButton>
+        <FilterButton 
+          $active={activeFilter === 'Business'} 
+          onClick={() => handleFilterClick('Business')}
+        >
+          Business
+        </FilterButton>
       </FilterContainer>
       
-      <CoursesGrid>
-        {availableCoursesData.map(course => (
-          <CourseCard key={course.id} onClick={() => handleCourseClick(course)}>
-            <CourseImage>
-              <img src={course.image} alt={course.title} />
-            </CourseImage>
-            <CourseContent>
+      {loading ? (
+        <LoadingSpinner text="Chargement des cours..." />
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={() => window.location.reload()} />
+      ) : (
+        <CoursesGrid>
+          {filteredCourses.map(course => (
+            <CourseCard key={course.id} onClick={() => handleCourseClick(course.id)}>
               <CourseProvider>
-                <ProviderLogo src={course.providerLogo} alt={course.provider}>
-                 
-                </ProviderLogo>
+                {getProviderLogo(course.provider) && (
+                  <ProviderLogo src={getProviderLogo(course.provider)} alt={course.provider} />
+                )}
                 {course.provider}
-                </CourseProvider>
-              <CourseTitle>{course.title}</CourseTitle>
-              <CourseDescription>{course.description}</CourseDescription>
-              <CourseStats>
-                <StatItem>
-                  <StatValue>{course.duration}</StatValue>
-                  <StatLabel>Durée</StatLabel>
-                </StatItem>
-                <StatItem>
-                  <StatValue>{course.level}</StatValue>
-                  <StatLabel>Niveau</StatLabel>
-                </StatItem>
-                <StatItem>
-                  <StatValue>{course.students}</StatValue>
-                  <StatLabel>Étudiants</StatLabel>
-                </StatItem>
-              </CourseStats>
-            </CourseContent>
-            <CourseFooter onClick={(e) => e.stopPropagation()}>
-              <CoursePrice>{course.price}</CoursePrice>
-              <EnrollButton onClick={(e) => {
-                e.stopPropagation();
-                handleEnrollClick(course);
-              }}>S'inscrire</EnrollButton>
-            </CourseFooter>
-          </CourseCard>
-        ))}
-      </CoursesGrid>
-      
-      <PaginationContainer>
-        <PageButton active={true}>1</PageButton>
-        <PageButton>2</PageButton>
-        <PageButton>3</PageButton>
-        <PageButton>4</PageButton>
-        <PageButton>5</PageButton>
-      </PaginationContainer>
-    </AvailableCoursesContainer>
-  );
+              </CourseProvider>
+
+              <CourseImage>
+              <img 
+    src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : 'https://via.placeholder.com/300x180?text=Pas+d%27image'} 
+    alt={course.title} 
+  />
+                </CourseImage>
+                
+                <CourseTitle>{course.title}</CourseTitle>
+                
+                <CourseDescription>
+                  {course.description.substring(0, 80)}...
+                </CourseDescription>
+                
+                <CourseStats>
+                  <StatItem>
+                    <StatValue>{course.duration || '8 weeks'}</StatValue>
+                    <StatLabel>Durée</StatLabel>
+                  </StatItem>
+                  <StatItem>
+                    <StatValue>{course.level || 'Beginner'}</StatValue>
+                    <StatLabel>Niveau</StatLabel>
+                  </StatItem>
+                  <StatItem>
+                    <StatValue>{course.enrolledCount || '15K'}</StatValue>
+                    <StatLabel>Étudiants</StatLabel>
+                  </StatItem>
+                </CourseStats>
+                
+                <CourseFooter>
+                  <CoursePrice>{parseFloat(course.price).toFixed(2)} €</CoursePrice>
+                  <EnrollButton>S'inscrire</EnrollButton>
+                </CourseFooter>
+              </CourseCard>
+            ))}
+          </CoursesGrid>
+        )}
+      </AvailableCoursesContainer>
+    );
 };
 
 export default AvailableCourses;

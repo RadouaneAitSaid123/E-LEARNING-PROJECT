@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 
 const ListContainer = styled.div`
   width: 100%;
@@ -156,21 +157,21 @@ const CreateButton = styled(Link)`
 
 const CoursesList = ({ courses, onDelete, isLoading }) => {
   if (isLoading) {
-    return <div>Loading courses...</div>;
+    return <LoadingSpinner text="Chargement des cours..." />;
   }
 
   if (!courses || courses.length === 0) {
     return (
       <EmptyState>
-        <EmptyStateTitle>No Courses Found</EmptyStateTitle>
-        <EmptyStateText>You haven't created any courses yet. Get started by creating your first course.</EmptyStateText>
-        <CreateButton to="/professor/courses/new">Create Your First Course</CreateButton>
+        <EmptyStateTitle>Aucun cours trouvé</EmptyStateTitle>
+        <EmptyStateText>Vous n'avez pas encore créé de cours. Commencez par créer votre premier cours.</EmptyStateText>
+        <CreateButton to="/professor/courses/new">Créer votre premier cours</CreateButton>
       </EmptyState>
     );
   }
 
   const handleDeleteClick = (id, title) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"? This action cannot be undone.`)) {
+    if (window.confirm(`Êtes-vous sûr de vouloir supprimer "${title}" ? Cette action ne peut pas être annulée.`)) {
       onDelete(id);
     }
   };
@@ -185,14 +186,14 @@ const CoursesList = ({ courses, onDelete, isLoading }) => {
               <CourseTitle>{course.title}</CourseTitle>
               <CourseInfo>
                 <span>${parseFloat(course.price).toFixed(2)}</span>
-                <span>{course.enrolledCount || 0} students enrolled</span>
+                <span>{course.enrolledCount || 0} étudiants inscrits</span>
               </CourseInfo>
               <ButtonGroup>
                 <EditButton as={Link} to={`/professor/courses/edit/${course.id}`}>
-                  Edit
+                  Modifier
                 </EditButton>
                 <DeleteButton onClick={() => handleDeleteClick(course.id, course.title)}>
-                  Delete
+                  Supprimer
                 </DeleteButton>
               </ButtonGroup>
             </CourseContent>

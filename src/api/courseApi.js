@@ -1,152 +1,85 @@
-// This is a placeholder API module that you would replace with your actual API calls
+import axios from 'axios';
 
-// Mock function to simulate API delay
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const API_URL = 'http://localhost:8080/api'; // Ajustez selon votre configuration backend
 
-// Create a new course
-export const createCourse = async (courseData) => {
-  try {
-    // Simulate API call
-    await delay(1000);
-    console.log('Creating course with data:', courseData);
-    
-    // In a real implementation, you would make an API call here
-    // Example: return await axios.post('/api/courses', courseData);
-    
-    // For now, just return a mock response
-    return {
-      id: Date.now().toString(),
-      ...courseData,
-      createdAt: new Date().toISOString()
-    };
-  } catch (error) {
-    console.error('Error creating course:', error);
-    throw error;
-  }
+// Fonction pour récupérer le token d'authentification du localStorage
+const getAuthToken = () => {
+  return localStorage.getItem('token');
 };
 
-// Update an existing course
-export const updateCourse = async (courseId, courseData) => {
-  try {
-    // Simulate API call
-    await delay(1000);
-    console.log(`Updating course ${courseId} with data:`, courseData);
-    
-    // In a real implementation, you would make an API call here
-    // Example: return await axios.put(`/api/courses/${courseId}`, courseData);
-    
-    // For now, just return a mock response
-    return {
-      id: courseId,
-      ...courseData,
-      updatedAt: new Date().toISOString()
-    };
-  } catch (error) {
-    console.error('Error updating course:', error);
-    throw error;
-  }
+// Configuration d'Axios avec le token d'authentification
+const getAuthHeader = () => {
+  const token = getAuthToken();
+  return {
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json'
+    }
+  };
 };
 
-// Get a course by ID
-export const getCourseById = async (courseId) => {
-  try {
-    // Simulate API call
-    await delay(500);
-    console.log(`Fetching course with ID: ${courseId}`);
-    
-    // In a real implementation, you would make an API call here
-    // Example: return await axios.get(`/api/courses/${courseId}`);
-    
-    // For now, just return a mock response
-    return {
-      id: courseId,
-      title: 'Sample Course',
-      description: 'This is a sample course description.',
-      price: '99.99',
-      imageUrl: 'https://via.placeholder.com/800x400',
-      sections: [
-        { title: 'Introduction', content: 'Welcome to the course!' },
-        { title: 'Chapter 1', content: 'This is the content for chapter 1.' }
-      ],
-      quiz: {
-        questions: [
-          {
-            questionText: 'What is React?',
-            choices: [
-              { text: 'A JavaScript library for building user interfaces', isCorrect: true },
-              { text: 'A programming language', isCorrect: false },
-              { text: 'A database management system', isCorrect: false }
-            ]
-          }
-        ]
-      }
-    };
-  } catch (error) {
-    console.error('Error fetching course:', error);
-    throw error;
-  }
-};
-
-// Get all courses
+// Récupérer tous les cours d'un professeur
 export const getCourses = async () => {
   try {
-    // Simulate API call
-    await delay(800);
-    console.log('Fetching all courses');
-    
-    // In a real implementation, you would make an API call here
-    // Example: return await axios.get('/api/courses');
-    
-    // For now, just return mock data
-    return [
-      {
-        id: '1',
-        title: 'Introduction to React',
-        description: 'Learn the basics of React and build your first application.',
-        price: '49.99',
-        imageUrl: 'https://via.placeholder.com/800x400?text=React+Course',
-        enrolledCount: 125,
-        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: '2',
-        title: 'Advanced JavaScript Patterns',
-        description: 'Master advanced JavaScript concepts and design patterns.',
-        price: '79.99',
-        imageUrl: 'https://via.placeholder.com/800x400?text=JavaScript+Course',
-        enrolledCount: 87,
-        createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: '3',
-        title: 'Full Stack Development with MERN',
-        description: 'Build complete web applications with MongoDB, Express, React, and Node.js.',
-        price: '99.99',
-        imageUrl: 'https://via.placeholder.com/800x400?text=MERN+Course',
-        enrolledCount: 63,
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      }
-    ];
+    const response = await axios.get(`${API_URL}/courses/professor`, getAuthHeader());
+    return response.data;
   } catch (error) {
-    console.error('Error fetching courses:', error);
+    console.error('Erreur lors de la récupération des cours:', error);
     throw error;
   }
 };
 
-// Delete a course
-export const deleteCourse = async (courseId) => {
+// Récupérer un cours spécifique
+export const getCourseById = async (id) => {
   try {
-    // Simulate API call
-    await delay(1000);
-    console.log(`Deleting course with ID: ${courseId}`);
-    
-    // In a real implementation, you would make an API call here
-    // Example: return await axios.delete(`/api/courses/${courseId}`);
-    
-    // For now, just return a success message
-    return { success: true, message: 'Course deleted successfully' };
+    const response = await axios.get(`${API_URL}/courses/${id}`, getAuthHeader());
+    return response.data;
   } catch (error) {
-    console.error('Error deleting course:', error);
+    console.error(`Erreur lors de la récupération du cours ${id}:`, error);
+    throw error;
+  }
+};
+
+// Créer un nouveau cours
+export const createCourse = async (courseData) => {
+  try {
+    const response = await axios.post(`${API_URL}/courses/create`, courseData, getAuthHeader());
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la création du cours:', error);
+    throw error;
+  }
+};
+
+// Mettre à jour un cours existant
+export const updateCourse = async (id, courseData) => {
+  try {
+    const response = await axios.put(`${API_URL}/courses/${id}`, courseData, getAuthHeader());
+    return response.data;
+  } catch (error) {
+    console.error(`Erreur lors de la mise à jour du cours ${id}:`, error);
+    throw error;
+  }
+};
+
+// Supprimer un cours
+export const deleteCourse = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL}/courses/${id}`, getAuthHeader());
+    return response.data;
+  } catch (error) {
+    console.error(`Erreur lors de la suppression du cours ${id}:`, error);
+    throw error;
+  }
+};
+
+// Obtenir les statistiques du professeur
+export const getProfessorStats = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/professor/stats`, getAuthHeader());
+    return response.data;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des statistiques:', error);
     throw error;
   }
 };

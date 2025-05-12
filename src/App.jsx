@@ -9,6 +9,7 @@ import CourseCheckout from './components/CourseCheckout/CourseCheckout'
 import CourseDetails from './components/CourseDetails/CourseDetails'
 import CourseView from './components/CourseView/CourseView'
 import Certificate from './components/Certificate/Certificate'
+import Accomplishments from './components/Accomplishments/Accomplishments'
 import './App.css'
 import CoursesListPage from './pages/professor/CoursesListPage';
 import NewCoursePage from './pages/professor/NewCoursePage';
@@ -53,6 +54,14 @@ function App() {
               <>
                 <Header />
                 <MyCourses />
+                <Footer />
+              </>
+            } />
+            
+            <Route path="/my-accomplishments" element={
+              <>
+                <Header />
+                <Accomplishments />
                 <Footer />
               </>
             } />

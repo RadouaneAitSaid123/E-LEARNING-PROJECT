@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faShare} from '@fortawesome/free-solid-svg-icons';
 import pennLogo from '../../assets/penselvLogo.png';
 import userAvatar from '../../assets/VectorImage.png';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CertificateContainer = styled.div`
   width: 100%;
@@ -408,7 +412,7 @@ const ActionButton = styled.button`
 const Certificate = () => {
   
   // Données du certificat basées sur l'image de référence
-  const [certificateData, setCertificateData] = useState({
+  const [certificateData] = useState({
     date: 'May 30, 2024',
     studentName: 'PETER JOHN',
     courseName: 'Introduction to Java and Object-Oriented Programming',
@@ -422,11 +426,52 @@ const Certificate = () => {
     ]
   });
   
+  // Référence pour le certificat
+  const certificateRef = useRef(null);
+  const[isLoading, setIsLoading] = useState(false);
+  
   const handleDownload = () => {
-    // Logique pour télécharger le certificat
-    console.log('Téléchargement du certificat');
-    // Dans une implémentation réelle, on utiliserait une bibliothèque comme html2canvas ou jsPDF
+    setIsLoading(true);
+    const loadingToast = toast ? toast.loading('Préparation du certificat...') : null;
+  
+    if (certificateRef.current) {
+      html2canvas(certificateRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+      }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('l', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+  
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgWidth = imgProps.width;
+        const imgHeight = imgProps.height;
+        const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+        const scaledWidth = imgWidth * ratio ;
+        const scaledHeight = imgHeight * ratio;
+  
+        const x = (pageWidth - scaledWidth) / 2;
+        const y = (pageHeight - scaledHeight) / 2;
+  
+        pdf.addImage(imgData, 'PNG', x, y, scaledWidth, scaledHeight);
+        pdf.save(`${certificateData.studentName}_certificate.pdf`);
+  
+        if (loadingToast) toast.dismiss(loadingToast);
+        toast.success('Certificat téléchargé avec succès !');
+      }).catch(err => {
+        if (loadingToast) toast.dismiss(loadingToast);
+        toast.error("Une erreur s'est produite lors de la génération du certificat.");
+        console.error(err);
+      }).finally(() => {
+        setIsLoading(false);
+      });
+    }
   };
+  
+  
   
   const handleShare = () => {
     // Logique pour partager le certificat
@@ -480,7 +525,7 @@ const Certificate = () => {
             </LearningSection>
           </CompletionInfoCard>
           
-          <CertificateCard>
+          <CertificateCard ref={certificateRef}>
             <CertificateHeader>
               <UniversityLogo>
                 <img src={pennLogo} alt="University of Pennsylvania Logo" />
@@ -510,9 +555,14 @@ const Certificate = () => {
         </CertificateLayout>
         
         <ActionButtons>
-          <ActionButton primary onClick={handleDownload}>
-            <FontAwesomeIcon icon={faDownload} />
-            Télécharger le certificat
+          <ActionButton primary onClick={handleDownload} disabled={isLoading}>
+            {isLoading ? 'Saving . . .': (
+              <>
+               <FontAwesomeIcon icon={faDownload} />
+               Télécharger le certificat
+               </>
+            )}
+           
           </ActionButton>
           <ActionButton onClick={handleShare}>
             <FontAwesomeIcon icon={faShare} />
@@ -520,6 +570,7 @@ const Certificate = () => {
           </ActionButton>
         </ActionButtons>
       </CertificateContent>
+      <ToastContainer position="bottom-right"/>
     </CertificateContainer>
   );
 };

@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import QuizBuilder from '../QuizBuilder/QuizBuilder';
-import { createCourse, updateCourse } from '../../api/courseApi';
-
+import ImageUploader from '../ImageUploader/ImageUploader';
 const FormContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -142,10 +141,20 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
     title: '',
     description: '',
     price: '',
-    imageUrl: '',
+    imageUrl: initialData?.imageUrl || '',
+    category: initialData?.category || '',
+    level: initialData?.level || 'Beginner',
+    duration: initialData?.duration || '',
     sections: [{ title: '', content: '' }],
     quiz: { questions: [] }
   });
+
+  const handleImageUpload = (imageUrl) => {
+    setFormData(prev => ({
+      ...prev,
+      imageUrl: imageUrl,
+    }));
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -198,23 +207,51 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form data
+    if (!formData.title.trim()) {
+      alert('Please enter a course title');
+      return;
+    }
+    
+    if (!formData.description.trim()) {
+      alert('Please enter a course description');
+      return;
+    }
+    
+    if (!formData.price || isNaN(parseFloat(formData.price)) || parseFloat(formData.price) < 0) {
+      alert('Please enter a valid price');
+      return;
+    }
+    
+    // Check if at least one section has content
+    const hasValidSection = formData.sections.some(
+      section => section.title.trim() && section.content.trim()
+    );
+    
+    if (!hasValidSection) {
+      alert('Please add at least one section with title and content');
+      return;
+    }
+    
+    // Format the data
+    const courseData = {
+      ...formData,
+      price: parseFloat(formData.price),
+      // Filter out empty sections
+      sections: formData.sections.filter(
+        section => section.title.trim() && section.content.trim()
+      ),
+      // Only include quiz if it has questions
+      quiz: formData.quiz.questions.length > 0 ? formData.quiz : null
+    };
+    
     setIsSubmitting(true);
-
+    
     try {
-      if (onSubmit) {
-        // Use the onSubmit prop if provided
-        await onSubmit(formData);
-      } else {
-        // Fall back to the original behavior
-        if (courseId) {
-          await updateCourse(courseId, formData);
-        } else {
-          await createCourse(formData);
-        }
-        navigate('/professor/courses');
-      }
+      await onSubmit(courseData);
     } catch (error) {
-      console.error('Error saving course:', error);
+      console.error('Error submitting course:', error);
       alert('Failed to save course. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -223,10 +260,9 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
 
   return (
     <FormContainer>
-      <FormTitle>{courseId ? 'Edit Course' : 'Create New Course'}</FormTitle>
       <Form onSubmit={handleSubmit}>
         <FormGroup>
-          <Label htmlFor="title">Course Title</Label>
+          <Label htmlFor="title">Titre du cours *</Label>
           <Input
             type="text"
             id="title"
@@ -236,9 +272,9 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
             required
           />
         </FormGroup>
-
+        
         <FormGroup>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description">Description *</Label>
           <TextArea
             id="description"
             name="description"
@@ -247,100 +283,123 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
             required
           />
         </FormGroup>
-
+        
         <FormGroup>
-          <Label htmlFor="price">Price ($)</Label>
+          <Label htmlFor="price">Prix (€) *</Label>
           <Input
             type="number"
             id="price"
             name="price"
-            min="0"
-            step="0.01"
             value={formData.price}
             onChange={handleChange}
+            min="0"
+            step="0.01"
             required
           />
         </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="imageUrl">Image URL</Label>
-          <Input
-            type="url"
-            id="imageUrl"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            required
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Label>Course Sections</Label>
-          {formData.sections.map((section, index) => (
-            <SectionContainer key={index}>
-              <SectionHeader>
-                <SectionTitle>Section {index + 1}</SectionTitle>
-                {formData.sections.length > 1 && (
-                  <DangerButton 
-                    type="button" 
-                    onClick={() => removeSection(index)}
-                  >
-                    Remove
-                  </DangerButton>
-                )}
-              </SectionHeader>
-              
-              <FormGroup>
-                <Label htmlFor={`section-title-${index}`}>Section Title</Label>
-                <Input
-                  type="text"
-                  id={`section-title-${index}`}
-                  value={section.title}
-                  onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
-                  required
-                />
-              </FormGroup>
-              
-              <FormGroup>
-                <Label htmlFor={`section-content-${index}`}>Content</Label>
-                <TextArea
-                  id={`section-content-${index}`}
-                  value={section.content}
-                  onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
-                  required
-                />
-              </FormGroup>
-            </SectionContainer>
-          ))}
-          
-          <Button type="button" onClick={addSection}>
-            Add Section
-          </Button>
-        </FormGroup>
-
-        <Divider />
         
         <FormGroup>
-          <Label>Course Quiz</Label>
-          <QuizBuilder 
-            quizData={formData.quiz} 
-            onChange={handleQuizChange} 
+          <Label htmlFor="category">Catégorie</Label>
+          <Input
+            type="text"
+            id="category"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            placeholder="Ex: Programming, Data Science, Web Development"
           />
         </FormGroup>
-
+        
+        <FormGroup>
+          <Label htmlFor="level">Niveau</Label>
+          <select
+            id="level"
+            name="level"
+            value={formData.level}
+            onChange={handleChange}
+          >
+            <option value="Beginner">Débutant</option>
+            <option value="Intermediate">Intermédiaire</option>
+            <option value="Advanced">Avancé</option>
+          </select>
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="duration">Durée</Label>
+          <Input
+            type="text"
+            id="duration"
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            placeholder="Ex: 4 weeks, 10 hours"
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label>Image du cours</Label>
+          <ImageUploader
+            onImageUpload={(imageUrl) => setFormData(prev => ({...prev, imageUrl}))}
+            initialImage={formData.imageUrl}
+          />
+        </FormGroup>
+        
+        <Divider />
+        
+        <SectionTitle>Course Content</SectionTitle>
+        
+        {formData.sections.map((section, index) => (
+          <SectionContainer key={index}>
+            <SectionHeader>
+              <SectionTitle>Section {index + 1}</SectionTitle>
+              {formData.sections.length > 1 && (
+                <DangerButton type="button" onClick={() => removeSection(index)}>
+                  Remove
+                </DangerButton>
+              )}
+            </SectionHeader>
+            
+            <FormGroup>
+              <Label>Section Title</Label>
+              <Input
+                type="text"
+                value={section.title}
+                onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
+                placeholder="Enter section title"
+                required
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Section Content</Label>
+              <TextArea
+                value={section.content}
+                onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
+                placeholder="Enter section content"
+                required
+              />
+            </FormGroup>
+          </SectionContainer>
+        ))}
+        
+        <Button type="button" onClick={addSection}>
+          Add Section
+        </Button>
+        
+        <Divider />
+        
+        <SectionTitle>Quiz</SectionTitle>
+        <QuizBuilder quizData={formData.quiz} onChange={handleQuizChange} />
+        
+        <Divider />
+        
         <ButtonGroup>
-          <Button2 
-            type="button" 
-            onClick={() => navigate('/professor/courses')}
-          >
-            Cancel
-          </Button2>
-          <Button 
-            type="submit" 
-            disabled={isSubmitting}
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : courseId ? 'Update Course' : 'Create Course'}
           </Button>
+          <Button2 type="button" onClick={() => navigate('/professor/courses')}>
+            Cancel
+          </Button2>
         </ButtonGroup>
       </Form>
     </FormContainer>

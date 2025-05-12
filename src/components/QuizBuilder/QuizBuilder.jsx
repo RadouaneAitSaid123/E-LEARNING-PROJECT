@@ -61,7 +61,7 @@ const ChoiceContainer = styled.div`
   padding: 0.5rem;
   border: 1px solid #eee;
   border-radius: 4px;
-  background-color: ${props => props.isCorrect ? '#e6f7e6' : 'white'};
+  background-color: ${props => props.$isCorrect ? '#e6f7e6' : 'white'};
 `;
 
 const ChoiceInput = styled.div`
@@ -237,7 +237,7 @@ const QuizBuilder = ({ quizData, onChange }) => {
             <FormGroup>
               <Label>Answer Choices</Label>
               {question.choices.map((choice, choiceIndex) => (
-                <ChoiceContainer key={choiceIndex} isCorrect={choice.isCorrect}>
+                <ChoiceContainer key={choiceIndex} $isCorrect={choice.isCorrect}>
                   <ChoiceInput>
                     <input
                       type="radio"
