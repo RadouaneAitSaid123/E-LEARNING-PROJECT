@@ -44,17 +44,19 @@ public class SecurityConfig {
                         .requestMatchers("/api/professors/**").hasAuthority("PROFESSOR")
                         .requestMatchers("/api/students/**").hasAuthority("STUDENT")
                         .requestMatchers("/api/courses/available").permitAll()
-                        .requestMatchers("/uploads/**","/images/**").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/images/**", "/images/courses/**").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/resources/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

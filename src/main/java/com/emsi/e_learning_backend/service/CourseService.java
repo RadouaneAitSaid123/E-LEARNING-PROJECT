@@ -113,6 +113,9 @@ public class CourseService {
         existingCourse.setDescription(courseDto.getDescription());
         existingCourse.setPrice(courseDto.getPrice());
         existingCourse.setImageUrl(courseDto.getImageUrl());
+        existingCourse.setCategory(courseDto.getCategory());
+        existingCourse.setLevel(courseDto.getLevel());
+        existingCourse.setDuration(courseDto.getDuration());
 
         // Update sections
         existingCourse.getSections().clear();
