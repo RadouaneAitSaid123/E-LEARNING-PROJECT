@@ -146,15 +146,9 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
     level: initialData?.level || 'Beginner',
     duration: initialData?.duration || '',
     sections: [{ title: '', content: '' }],
-    quiz: { questions: [] }
+    quiz: initialData?.quiz || { questions: [] }
   });
 
-  const handleImageUpload = (imageUrl) => {
-    setFormData(prev => ({
-      ...prev,
-      imageUrl: imageUrl,
-    }));
-  };
 
   useEffect(() => {
     if (initialData) {
@@ -242,8 +236,10 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
       sections: formData.sections.filter(
         section => section.title.trim() && section.content.trim()
       ),
-      // Only include quiz if it has questions
-      quiz: formData.quiz.questions.length > 0 ? formData.quiz : null
+      // Only include quiz if it exists and has questions
+      quiz: formData.quiz && formData.quiz.questions && formData.quiz.questions.length > 0 
+      ? formData.quiz 
+      : null
     };
     
     setIsSubmitting(true);
@@ -300,14 +296,18 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
         
         <FormGroup>
           <Label htmlFor="category">Catégorie</Label>
-          <Input
-            type="text"
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Ex: Programming, Data Science, Web Development"
-          />
+         <select
+         id='category'
+         name='category'
+         value={formData.category}
+         onChange={handleChange}
+         >
+          <option value="Programming">Programming</option>
+          <option value="Data Science">Data Science</option>
+          <option value="Web Development">Web Development</option>
+          <option value="Business">Business</option>
+
+         </select>
         </FormGroup>
         
         <FormGroup>
@@ -318,14 +318,14 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
             value={formData.level}
             onChange={handleChange}
           >
-            <option value="Beginner">Débutant</option>
-            <option value="Intermediate">Intermédiaire</option>
-            <option value="Advanced">Avancé</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
           </select>
         </FormGroup>
         
         <FormGroup>
-          <Label htmlFor="duration">Durée</Label>
+          <Label htmlFor="duration">Duration</Label>
           <Input
             type="text"
             id="duration"
@@ -337,7 +337,7 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
         </FormGroup>
         
         <FormGroup>
-          <Label>Image du cours</Label>
+          <Label>Course Image</Label>
           <ImageUploader
             onImageUpload={(imageUrl) => setFormData(prev => ({...prev, imageUrl}))}
             initialImage={formData.imageUrl}

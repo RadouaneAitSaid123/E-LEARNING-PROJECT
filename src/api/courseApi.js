@@ -32,7 +32,7 @@ export const getCourses = async () => {
 // Récupérer un cours spécifique
 export const getCourseById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/courses/${id}`, getAuthHeader());
+    const response = await axios.get(`${API_URL}/courses/available/${id}`, getAuthHeader());
     return response.data;
   } catch (error) {
     console.error(`Erreur lors de la récupération du cours ${id}:`, error);

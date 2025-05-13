@@ -4,11 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { getAvailableCourses } from '../../api/availableCoursesApi';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
-import metaLogo from '../../assets/metaLogo.png';
-import ibmLogo from '../../assets/IBMLogo.png';
-import penselvLogo from '../../assets/penselvLogo.png';
-import californiaLogo from '../../assets/californiaLogo.png';
-import googleLogo from '../../assets/googleLogo.png';
 
 const AvailableCoursesContainer = styled.div`
   width: 100%;
@@ -251,6 +246,32 @@ const CourseFooter = styled.div`
 
 
 
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 0.5rem;
+`;
+
+const PageButton = styled.button`
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: ${props => props.$active ? '#0056D2' : 'white'};
+  color: ${props => props.$active ? 'white' : '#333'};
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: ${props => props.$active ? '#004bb9' : '#f5f5f5'};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+
 const AvailableCourses = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('availableCourses');
@@ -258,6 +279,8 @@ const AvailableCourses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 3;
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -294,19 +317,17 @@ const AvailableCourses = () => {
     ? courses 
     : courses.filter(course => course.category === activeFilter);
 
-  // Fonction pour obtenir le logo du fournisseur
-  const getProviderLogo = (provider) => {
-    if (!provider) return null;
-    
-    switch (provider.toLowerCase()) {
-      case 'meta': return metaLogo;
-      case 'ibm': return ibmLogo;
-      case 'google': return googleLogo;
-      case 'university of california': return californiaLogo;
-      case 'university of pennsylvania': return penselvLogo;
-      default: return null;
-    }
-  };
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeFilter]);
+
 
   // Dans la partie rendu du composant, modifiez la structure de la carte :
   return (
@@ -364,18 +385,20 @@ const AvailableCourses = () => {
       ) : error ? (
         <ErrorMessage message={error} onRetry={() => window.location.reload()} />
       ) : (
-        <CoursesGrid>
-          {filteredCourses.map(course => (
-            <CourseCard key={course.id} onClick={() => handleCourseClick(course.id)}>
-              <CourseProvider>
-                {getProviderLogo(course.provider) && (
-                  <ProviderLogo src={getProviderLogo(course.provider)} alt={course.provider} />
-                )}
-                {course.provider}
-              </CourseProvider>
+        <>
+          <CoursesGrid>
+            {filteredCourses.map(course => (
+              <CourseCard key={course.id} onClick={() => handleCourseClick(course.id)}>
+                <CourseProvider>
+                  {course.professor ? (
+                    <span>By: {course.professor.fullName}</span>
+                  ) : (
+                    <span>No instructor</span>
+                  )}
+                </CourseProvider>
 
-              <CourseImage>
-              <img 
+                <CourseImage>
+                <img 
     src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : 'https://via.placeholder.com/300x180?text=Pas+d%27image'} 
     alt={course.title} 
   />
@@ -409,9 +432,38 @@ const AvailableCourses = () => {
               </CourseCard>
             ))}
           </CoursesGrid>
-        )}
-      </AvailableCoursesContainer>
-    );
+
+          {totalPages > 1 && (
+            <PaginationContainer>
+              <PageButton 
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                &laquo;
+              </PageButton>
+              
+              {[...Array(totalPages).keys()].map(number => (
+                <PageButton
+                  key={number + 1}
+                  $active={currentPage === number + 1}
+                  onClick={() => paginate(number + 1)}
+                >
+                  {number + 1}
+                </PageButton>
+              ))}
+              
+              <PageButton 
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                &raquo;
+              </PageButton>
+            </PaginationContainer>
+          )}
+        </>
+      )}
+    </AvailableCoursesContainer>
+  );
 };
 
 export default AvailableCourses;

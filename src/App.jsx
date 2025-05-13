@@ -16,7 +16,7 @@ import NewCoursePage from './pages/professor/NewCoursePage';
 import EditCoursePage from './pages/professor/EditCoursePage';
 import ProfessorDashboardPage from './pages/professor/ProfessorDashboardPage';
 import { AuthProvider } from './contexts/AuthContext';
-import { ProtectedRoute, ProfessorRoute, StudentRoute } from './components/ProtectedRoute/ProtectedRoute';
+import { ProfessorRoute, StudentRoute } from './components/ProtectedRoute/ProtectedRoute';
 
 function App() {
   return (

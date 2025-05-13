@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
@@ -33,9 +33,16 @@ const CourseCard = styled.div`
 
 const CourseImage = styled.div`
   height: 180px;
-  background-image: url(${props => props.src});
-  background-size: cover;
-  background-position: center;
+  width: 100%;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
 const CourseContent = styled.div`
@@ -155,7 +162,36 @@ const CreateButton = styled(Link)`
   }
 `;
 
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 0.5rem;
+`;
+
+const PageButton = styled.button`
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: ${props => props.$active ? '#0056D2' : 'white'};
+  color: ${props => props.$active ? 'white' : '#333'};
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: ${props => props.$active ? '#004bb9' : '#f5f5f5'};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+`;
+
 const CoursesList = ({ courses, onDelete, isLoading }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 3;
+
   if (isLoading) {
     return <LoadingSpinner text="Chargement des cours..." />;
   }
@@ -176,12 +212,26 @@ const CoursesList = ({ courses, onDelete, isLoading }) => {
     }
   };
 
+  // Calculate pagination
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = courses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(courses.length / coursesPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <ListContainer>
       <CourseGrid>
-        {courses.map(course => (
+        {currentCourses.map(course => (
           <CourseCard key={course.id}>
-            <CourseImage src={course.imageUrl || 'https://via.placeholder.com/300x180?text=No+Image'} />
+             <CourseImage>
+                <img 
+    src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : 'https://via.placeholder.com/300x180?text=Pas+d%27image'} 
+    alt={course.title} 
+  />
+                </CourseImage>
             <CourseContent>
               <CourseTitle>{course.title}</CourseTitle>
               <CourseInfo>
@@ -200,6 +250,34 @@ const CoursesList = ({ courses, onDelete, isLoading }) => {
           </CourseCard>
         ))}
       </CourseGrid>
+
+      {totalPages > 1 && (
+        <PaginationContainer>
+          <PageButton 
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            &laquo;
+          </PageButton>
+          
+          {[...Array(totalPages).keys()].map(number => (
+            <PageButton
+              key={number + 1}
+              $active={currentPage === number + 1}
+              onClick={() => paginate(number + 1)}
+            >
+              {number + 1}
+            </PageButton>
+          ))}
+          
+          <PageButton 
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            &raquo;
+          </PageButton>
+        </PaginationContainer>
+      )}
     </ListContainer>
   );
 };
