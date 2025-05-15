@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faCreditCard, faLock } from '@fortawesome/free-solid-svg-icons';
+import { enrollmentService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CheckoutContainer = styled.div`
   width: 100%;
@@ -205,7 +207,7 @@ const TotalPrice = styled.div`
 
 const CheckoutButton = styled.button`
   width: 100%;
-  background-color: #0056D2;
+  background-color: ${props => props.disabled ? '#B3C7E6' : '#0056D2'};
   color: white;
   border: none;
   border-radius: 10px;
@@ -213,7 +215,7 @@ const CheckoutButton = styled.button`
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
   font-size: 16px;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   margin-top: 1.5rem;
   display: flex;
   align-items: center;
@@ -222,7 +224,7 @@ const CheckoutButton = styled.button`
   transition: background-color 0.3s ease;
   
   &:hover {
-    background-color: #004bb9;
+    background-color: ${props => props.disabled ? '#B3C7E6' : '#004bb9'};
   }
 `;
 
@@ -260,7 +262,10 @@ const BenefitItem = styled.li`
 const CourseCheckout = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState('');
   
   // Récupérer les informations du cours depuis l'état de navigation
   const course = location.state?.course || {
@@ -272,11 +277,33 @@ const CourseCheckout = () => {
     originalPrice: '69,99 €'
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Ici, vous pourriez ajouter la logique pour traiter le paiement
-    alert('Paiement traité avec succès! Vous êtes maintenant inscrit au cours.');
-    navigate('/my-courses');
+    
+    if (!isAuthenticated) {
+      setError('Vous devez être connecté pour vous inscrire à un cours');
+      return;
+    }
+    
+    setIsProcessing(true);
+    setError('');
+    
+    try {
+      // Simuler un délai de traitement du paiement
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Enregistrer l'inscription au cours
+      await enrollmentService.enrollInCourse(course.id);
+      
+      // Rediriger vers la page des cours de l'utilisateur
+      alert('Paiement traité avec succès! Vous êtes maintenant inscrit au cours.');
+      navigate('/my-courses');
+    } catch (error) {
+      console.error('Erreur lors de l\'inscription au cours:', error);
+      setError('Une erreur est survenue lors de l\'inscription au cours. Veuillez réessayer.');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -347,9 +374,15 @@ const CourseCheckout = () => {
               </>
             )}
             
-            <CheckoutButton type="submit">
+            {error && (
+              <div style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>
+                {error}
+              </div>
+            )}
+            
+            <CheckoutButton type="submit" disabled={isProcessing}>
               <FontAwesomeIcon icon={faLock} />
-              Payer maintenant
+              {isProcessing ? 'Traitement en cours...' : 'Payer maintenant'}
             </CheckoutButton>
             
             <SecurityNote>

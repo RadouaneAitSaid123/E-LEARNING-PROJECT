@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import javaImage from '../../assets/myCoursesImage.png';
 import { useNavigate } from 'react-router-dom';
+import { enrollmentService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MyCoursesContainer = styled.div`
   width: 100%;
@@ -185,51 +187,58 @@ const ActionButton = styled.button`
 `;
 
 
-const coursesData = [
+// Données de cours par défaut pour l'affichage initial ou en cas d'erreur
+const defaultCoursesData = [
   {
     id: 1,
     title: 'Introduction to Java and Object Programming Language',
     provider: 'University of Pennsylvania',
-    image: javaImage,
+    imageUrl: null,
     progress: 100,
     completed: true
-  },
-  {
-    id: 2,
-    title: 'Meta Front-End Developer',
-    provider: 'Meta',
-    image: javaImage,
-    progress: 50,
-    completed: false
-  },
-  {
-    id: 3,
-    title: 'Big data',
-    provider: 'IBM',
-    image: javaImage,
-    progress: 83.33,
-    completed: false
-  },
-  {
-    id: 4,
-    title: 'English',
-    provider: 'University of California',
-    image: javaImage,
-    progress: 33.33,
-    completed: false
-  },
-  {
-    id: 5,
-    title: 'Introduction to Html and Css',
-    provider: 'IBM',
-    image: javaImage,
-    progress: 50,
-    completed: false
   }
 ];
 
 const MyCourses = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const [coursesData, setCoursesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  
+  useEffect(() => {
+    const fetchEnrolledCourses = async () => {
+      if (!isAuthenticated) {
+        setLoading(false);
+        return;
+      }
+      
+      try {
+        const enrolledCourses = await enrollmentService.getEnrolledCourses();
+        
+        // Transformer les données reçues pour correspondre à notre format d'affichage
+        const formattedCourses = enrolledCourses.map(course => ({
+          id: course.id,
+          title: course.title,
+          provider: course.provider || 'Fournisseur non spécifié',
+          imageUrl: course.imageUrl,
+          // Par défaut, on considère que le cours vient d'être commencé
+          progress: course.progress || 0,
+          completed: course.completed || false
+        }));
+        
+        setCoursesData(formattedCourses.length > 0 ? formattedCourses : defaultCoursesData);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des cours inscrits:', error);
+        setError('Impossible de charger vos cours. Veuillez réessayer plus tard.');
+        setCoursesData(defaultCoursesData);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchEnrolledCourses();
+  }, [isAuthenticated]);
   
   const navToAvailabelCourses = () => {
     navigate('/available-courses');
@@ -238,6 +247,7 @@ const MyCourses = () => {
   const navToCourseView = (courseId) => {
     navigate(`/course-view/${courseId}`);
   };
+  
   const navToCertificate = (courseId) => {
     navigate(`/certificate/${courseId}`);
   };
@@ -260,11 +270,23 @@ const MyCourses = () => {
       
       <SectionTitle>My learning</SectionTitle>
       
-      <CoursesContainer>
-        {coursesData.map(course => (
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          Chargement de vos cours...
+        </div>
+      ) : error ? (
+        <div style={{ textAlign: 'center', padding: '2rem', color: 'red' }}>
+          {error}
+        </div>
+      ) : (
+        <CoursesContainer>
+          {coursesData.map(course => (
           <CourseCard key={course.id}>
             <CourseImage>
-              <img src={course.image} alt={course.title} />
+              <img 
+                src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : javaImage} 
+                alt={course.title} 
+              />
             </CourseImage>
             <CourseContent>
               <ProviderName>{course.provider}</ProviderName>
@@ -281,7 +303,10 @@ const MyCourses = () => {
             </ProgressButton>
           </CourseCard>
         ))}
-      </CoursesContainer>
+  
+
+        </CoursesContainer>
+      )}
     </MyCoursesContainer>
   );
 };
