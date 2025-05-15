@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faCheck, faClock, faUser, faChalkboardTeacher, faGraduationCap, faStar, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import {faCheck, faClock, faUser, faChalkboardTeacher, faGraduationCap, faStar, faChevronDown, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import javaImage from '../../assets/myCoursesImage.png';
+import { courseService } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CourseDetailsContainer = styled.div`
   width: 100%;
@@ -263,24 +265,85 @@ const LessonDuration = styled.span`
   color: #737373;
 `;
 
+// Composant de chargement
+const LoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  width: 100%;
+`;
+
+const LoadingText = styled.p`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  color: #737373;
+  margin-top: 1rem;
+`;
+
+// Composant d'erreur
+const ErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  width: 100%;
+  color: #e74c3c;
+`;
+
+const ErrorIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: 1rem;
+`;
+
+const ErrorText = styled.p`
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  text-align: center;
+  max-width: 500px;
+`;
+
 const CourseDetails = () => {
   const [expandedModule, setExpandedModule] = useState(1);
-  //const { courseId } = useParams();
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { courseId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   
-  // Récupérer les données du cours depuis l'état de navigation ou utiliser des données par défaut
-  const course = location.state?.course || {
-    id: 1,
-    title: 'Introduction à la Programmation Java',
-    provider: 'Université de Pennsylvanie',
-    image: javaImage,
-    description: 'Apprenez les bases de la programmation orientée objet avec Java dans ce cours complet.',
-    duration: '8 semaines',
-    level: 'Débutant',
-    students: '15K',
-    price: '49,99 €'
-  };
+  // Récupérer les données du cours depuis l'API
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      try {
+        setLoading(true);
+        // Utiliser l'ID du cours depuis les paramètres d'URL ou depuis l'état de navigation
+        const id = courseId || location.state?.course?.id;
+        
+        if (!id) {
+          throw new Error('Aucun ID de cours n\'a été fourni');
+        }
+        
+        const courseData = await courseService.getCourseById(id);
+        setCourse({
+          ...courseData,
+          image: courseData.imageUrl || javaImage, // Utiliser l'image du cours ou une image par défaut
+          provider: courseData.professor?.name || 'Professeur',
+          students: courseData.enrolledCount || '0'
+        });
+        setLoading(false);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des détails du cours:', err);
+        setError(err.message || 'Une erreur est survenue lors du chargement du cours');
+        setLoading(false);
+      }
+    };
+    
+    fetchCourseDetails();
+  }, [courseId, location.state]);
   
   const toggleModule = (moduleId) => {
     if (expandedModule === moduleId) {
@@ -291,47 +354,49 @@ const CourseDetails = () => {
   };
   
   const handleEnrollClick = () => {
+    if (!isAuthenticated) {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
     navigate('/course-checkout', { state: { course } });
   };
   
-  // Données simulées pour les modules
-  const modulesData = [
-    {
-      id: 1,
-      title: 'Module 1: Introduction to Java',
-      lessons: [
-        { id: 1, title: 'What is Java?', duration: '15 min' },
-        { id: 2, title: 'Installing the development environment', duration: '20 min' },
-        { id: 3, title: 'Your first Java program', duration: '25 min' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Module 2: Variables and Data Types',
-      lessons: [
-        { id: 1, title: 'Primitive Types in Java', duration: '20 min' },
-        { id: 2, title: 'Declaration and initialization of variables', duration: '15 min' },
-        { id: 3, title: 'Type conversion', duration: '20 min' }
-      ]
-    },
-    {
-      id: 3,
-      title: 'Module 3: Control Structures',
-      lessons: [
-        { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
-        { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
-        { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
-      ]
-    }
-  ];
+  // Si le cours est en cours de chargement
+  if (loading) {
+    return (
+      <LoadingContainer>
+        <div className="spinner"></div>
+        <LoadingText>Chargement du cours...</LoadingText>
+      </LoadingContainer>
+    );
+  }
   
-  // Données simulées pour les résultats d'apprentissage
+  // Si une erreur s'est produite
+  if (error || !course) {
+    return (
+      <ErrorContainer>
+        <ErrorIcon>
+          <FontAwesomeIcon icon={faExclamationTriangle} />
+        </ErrorIcon>
+        <ErrorText>{error || 'Impossible de charger les détails du cours'}</ErrorText>
+      </ErrorContainer>
+    );
+  }
+  
+  // Préparer les données des modules à partir des sections du cours
+  const modulesData = course.sections ? course.sections.map((section, index) => ({
+    id: index + 1,
+    title: `Module ${index + 1}: ${section.title}`,
+    lessons: [{ id: 1, title: section.content, duration: '20 min' }]
+  })) : [];
+  
+  // Préparer les résultats d'apprentissage (à partir de la description ou utiliser des valeurs par défaut)
   const learningOutcomes = [
-    'Understand the fundamental concepts of object-oriented programming',
-'Master the basic syntax and structures of Java',
-'Create simple yet functional Java applications',
-'Understand how to debug and test Java programs',
-'Apply good programming practices in Java'
+    'Comprendre les concepts fondamentaux présentés dans ce cours',
+    'Maîtriser les compétences pratiques enseignées',
+    'Appliquer les connaissances acquises dans des projets réels',
+    'Développer une expertise dans le domaine d\'étude'
   ];
   
   return (
@@ -339,7 +404,9 @@ const CourseDetails = () => {
       <MainContent>
         <LeftPanel>
           <CourseImage>
-            <img src={course.image} alt={course.title} />
+          <img 
+    src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : 'https://via.placeholder.com/300x180?text=Pas+d%27image'} 
+    alt={course.title}/>
           </CourseImage>
           
           <CourseTitle>{course.title}</CourseTitle>
@@ -350,31 +417,31 @@ const CourseDetails = () => {
               <StatIcon>
                 <FontAwesomeIcon icon={faClock} />
               </StatIcon>
-              <StatText>{course.duration}</StatText>
+              <StatText>{course.duration || 'Non spécifié'}</StatText>
             </StatItem>
             <StatItem>
               <StatIcon>
                 <FontAwesomeIcon icon={faChalkboardTeacher} />
               </StatIcon>
-              <StatText>{course.level}</StatText>
+              <StatText>{course.level || 'Tous niveaux'}</StatText>
             </StatItem>
             <StatItem>
               <StatIcon>
                 <FontAwesomeIcon icon={faUser} />
               </StatIcon>
-              <StatText>{course.students} students</StatText>
+              <StatText>{course.students} étudiants</StatText>
             </StatItem>
             <StatItem>
               <StatIcon>
                 <FontAwesomeIcon icon={faStar} />
               </StatIcon>
-              <StatText>4.8 (256 notice)</StatText>
+              <StatText>4.8 (256 avis)</StatText>
             </StatItem>
           </CourseStats>
           
           <CourseDescription>
             <p>{course.description}</p>
-            <p>This comprehensive course will guide you through the fundamentals of Java, from setting up the development environment to creating functional applications. You'll learn the principles of object-oriented programming, Java syntax, and development best practices.</p>
+            <p>Ce cours complet vous guidera à travers les concepts fondamentaux, de la configuration de l'environnement de développement à la création d'applications fonctionnelles. Vous apprendrez les principes, la syntaxe et les meilleures pratiques de développement.</p>
           </CourseDescription>
           
           <SectionTitle>What you will learn</SectionTitle>
@@ -392,7 +459,7 @@ const CourseDetails = () => {
         
         <RightPanel>
           <PriceCard>
-            <PriceValue>{course.price}</PriceValue>
+            <PriceValue>{course.price ? `${course.price} €` : 'Gratuit'}</PriceValue>
             <EnrollButton onClick={handleEnrollClick}>Register now</EnrollButton>
             
             <CourseIncludes>

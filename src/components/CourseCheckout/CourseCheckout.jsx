@@ -363,7 +363,9 @@ const CourseCheckout = () => {
           <SectionTitle>Résumé de la commande</SectionTitle>
           
           <CourseImage>
-            <img src={course.image} alt={course.title} />
+          <img 
+    src={course.imageUrl ? `http://localhost:8080${course.imageUrl}` : 'https://via.placeholder.com/300x180?text=Pas+d%27image'} 
+    alt={course.title}/>
           </CourseImage>
           
           <CourseTitle>{course.title}</CourseTitle>
