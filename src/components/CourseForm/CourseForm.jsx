@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import QuizBuilder from '../QuizBuilder/QuizBuilder';
 import ImageUploader from '../ImageUploader/ImageUploader';
+import VideoUploader from '../VideoUploader/VideoUploader';
 const FormContainer = styled.div`
   max-width: 800px;
   margin: 0 auto;
@@ -145,7 +146,7 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
     category: initialData?.category || '',
     level: initialData?.level || 'Beginner',
     duration: initialData?.duration || '',
-    sections: [{ title: '', content: '' }],
+    sections: [{ title: '', content: '', videoUrl: '' }],
     quiz: initialData?.quiz || { questions: [] }
   });
 
@@ -179,7 +180,7 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
   const addSection = () => {
     setFormData(prev => ({
       ...prev,
-      sections: [...prev.sections, { title: '', content: '' }]
+      sections: [...prev.sections, { title: '', content: '', videoUrl: '' }]
     }));
   };
 
@@ -377,6 +378,14 @@ const CourseForm = ({ courseId, initialData, onSubmit }) => {
                 onChange={(e) => handleSectionChange(index, 'content', e.target.value)}
                 placeholder="Enter section content"
                 required
+              />
+            </FormGroup>
+            
+            <FormGroup>
+              <Label>Section Video</Label>
+              <VideoUploader
+                onVideoUpload={(videoUrl) => handleSectionChange(index, 'videoUrl', videoUrl)}
+                initialVideo={section.videoUrl}
               />
             </FormGroup>
           </SectionContainer>

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay,faChevronDown, faPause, faVolumeUp, faExpand,faChevronLeft, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import javaImage from '../../assets/myCoursesImage.png';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { courseService } from '../../services/api';
 
 const CourseViewContainer = styled.div`
   width: 100%;
@@ -446,63 +447,63 @@ const CertificateButton = styled.button`
   }
 ];*/
 
-const modulesData = [
-  {
-    id: 1,
-    title: 'Module 1: Introduction to Java',
-    active: true,
-    lessons: [
-      { id: 1, title: 'What is Java?', duration: '15 min' },
-      { id: 2, title: 'Installing the development environment', duration: '20 min' },
-      { id: 3, title: 'Your first Java program', duration: '25 min' }
-    ]
-  },
-  {
-    id: 2,
-    title: 'Module 2: Variables and Data Types',
-    active: false,
-    lessons: [
-      { id: 1, title: 'Primitive Types in Java', duration: '20 min' },
-      { id: 2, title: 'Declaration and initialization of variables', duration: '15 min' },
-      { id: 3, title: 'Type conversion', duration: '20 min' }
-    ]
-  },
-  {
-    id: 3,
-    title: 'Module 3: Control Structures',
-    active: false,
-    lessons: [
-      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
-      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
-      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
-    ]
-  },
-
-  {
-    id: 4,
-    title: 'Module 4: Control Structures',
-    active: false,
-    lessons: [
-      { id: 1, title: 'Conditional statements (if, else, switch)', duration: '25 min' },
-      { id: 2, title: 'Loops (for, while, do-while)', duration: '30 min' },
-      { id: 3, title: 'Jump instructions (break, continue)', duration: '15 min' }
-    ]
-  },
-
-];
+// Les données de modules seront chargées dynamiquement depuis l'API
 
 const CourseView = () => {
+  const { courseId } = useParams();
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [modulesData, setModulesData] = useState([]);
+  const [currentVideo, setCurrentVideo] = useState('');
+  
   const [activeTab, setActiveTab] = useState('overview');
   const [isPlaying, setIsPlaying] = useState(false);
   const [isModuleActive, setIsModuleActive] = useState(1);
   const [isLessonItemActive, setIsLessonItemActive] = useState(1);
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
-  };
+ 
 
   const [expandedModule, setExpandedModule] = useState(1);
   const [activeLesson, setActiveLesson] = useState(1);
+  
+  useEffect(() => {
+    const fetchCourseData = async () => {
+      try {
+        setLoading(true);
+        const courseData = await courseService.getCourseById(courseId);
+        setCourse(courseData);
+        
+        // Transformer les sections en modules pour l'affichage
+        if (courseData.sections && courseData.sections.length > 0) {
+          const formattedModules = courseData.sections.map((section, index) => ({
+            id: index + 1,
+            title: section.title,
+            active: index === 0,
+            content: section.content,
+            videoUrl: section.videoUrl || '',
+            lessons: [{ id: 1, title: section.title, duration: '15 min' }]
+          }));
+          
+          setModulesData(formattedModules);
+          
+          // Définir la première vidéo comme vidéo actuelle
+          if (formattedModules[0] && formattedModules[0].videoUrl) {
+            setCurrentVideo(formattedModules[0].videoUrl);
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement du cours:', error);
+        setError('Impossible de charger les détails du cours. Veuillez réessayer plus tard.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (courseId) {
+      fetchCourseData();
+    }
+  }, [courseId]);
 
   const toggleModule = (moduleId) => {
     setIsLessonItemActive(null);
@@ -530,6 +531,12 @@ const CourseView = () => {
       setExpandedModule(moduleId);
       setIsModuleActive(moduleId);
     }
+    
+    // Mettre à jour la vidéo actuelle
+    const selectedModule = modulesData.find(module => module.id === moduleId);
+    if (selectedModule && selectedModule.videoUrl) {
+      setCurrentVideo(selectedModule.videoUrl);
+    }
   };
   
   return (
@@ -545,7 +552,7 @@ const CourseView = () => {
               </ReturnHome>
             </Link>
             <BreadcrumbNav>
-                <span>DevOps – Introduction to Docker & Kubernetes</span>
+                <span>{course?.title || 'Chargement du cours...'}</span>
             </BreadcrumbNav>
           </HedearContentLeft>
           
@@ -568,33 +575,16 @@ const CourseView = () => {
       <MainContent>
         <LeftPanel>
           <VideoContainer>
-            <VideoPlaceholder>
-              <img src={javaImage} alt="Course thumbnail" />
-            </VideoPlaceholder>
-            
-            <VideoControls>
-              <ControlsLeft>
-                <PlayButton onClick={togglePlay}>
-                  <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-                </PlayButton>
-                
-                <VideoTimer>12:34 / 45:00</VideoTimer>
-              </ControlsLeft>
-              
-              <ProgressBar>
-                <Progress value={25} />
-              </ProgressBar>
-              
-              <ControlsRight>
-                <VolumeButton>
-                  <FontAwesomeIcon icon={faVolumeUp} />
-                </VolumeButton>
-                
-                <FullscreenButton>
-                  <FontAwesomeIcon icon={faExpand} />
-                </FullscreenButton>
-              </ControlsRight>
-            </VideoControls>
+            {currentVideo ? (
+              <video controls width="100%" height="auto">
+                <source src={`http://localhost:8080${currentVideo}`} type="video/mp4" />
+                Votre navigateur ne supporte pas la lecture de vidéos.
+              </video>
+            ) : (
+              <VideoPlaceholder>
+                <img src={course?.imageUrl ? `http://localhost:8080${course.imageUrl}` : javaImage} alt="Course thumbnail" />
+              </VideoPlaceholder>
+            )}
           </VideoContainer>
           
           <TabsContainer>
@@ -618,14 +608,22 @@ const CourseView = () => {
           <TabContent>
             {activeTab === 'overview' && (
               <CourseDescription>
-                <h2>DevOps – Introduction to Docker & Kubernetes</h2>
-                <p>
-                  This course provides a comprehensive introduction to Docker and Kubernetes, two of the most important technologies in modern DevOps practices. You'll learn how to containerize applications, manage them efficiently, and orchestrate deployments at scale.
-                </p>
-                <p>
-                  By the end of this course, you'll be able to build, deploy, and manage containerized applications using industry-standard tools and best practices.
-                </p>
-                
+                <h2>{course?.title || 'Chargement du cours...'}</h2>
+                {loading ? (
+                  <p>Chargement du contenu du cours...</p>
+                ) : error ? (
+                  <p style={{ color: 'red' }}>{error}</p>
+                ) : (
+                  <div>
+                    <p>{course?.description}</p>
+                    {isModuleActive && modulesData[isModuleActive - 1] && (
+                      <div>
+                        <h3>{modulesData[isModuleActive - 1].title}</h3>
+                        <p>{modulesData[isModuleActive - 1].content}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CourseDescription>
             )}
             {activeTab === 'qa' && <div>Q&A content goes here</div>}
