@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -31,3 +32,5 @@ build/
 
 ### VS Code ###
 .vscode/
+# Exclure le dossier d'images de cours
+src/main/resources/static/images/courses/
