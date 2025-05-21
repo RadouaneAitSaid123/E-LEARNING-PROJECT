@@ -62,6 +62,7 @@ public class CourseService {
                 Section section = new Section();
                 section.setTitle(sectionDto.getTitle());
                 section.setContent(sectionDto.getContent());
+                section.setVideoUrl(sectionDto.getVideoUrl());
                 return section;
             }).collect(Collectors.toList());
             course.setSections(sections);
@@ -124,6 +125,7 @@ public class CourseService {
                 Section section = new Section();
                 section.setTitle(sectionDto.getTitle());
                 section.setContent(sectionDto.getContent());
+                section.setVideoUrl(sectionDto.getVideoUrl());
                 existingCourse.getSections().add(section);
             });
         }
@@ -211,6 +213,7 @@ public class CourseService {
                 sectionDto.setId(section.getId());
                 sectionDto.setTitle(section.getTitle());
                 sectionDto.setContent(section.getContent());
+                sectionDto.setVideoUrl(section.getVideoUrl());
                 return sectionDto;
             }).collect(Collectors.toList());
             courseDto.setSections(sectionDtos);
@@ -262,6 +265,7 @@ public class CourseService {
                 Section section = new Section();
                 section.setTitle(sectionDto.getTitle());
                 section.setContent(sectionDto.getContent());
+                section.setVideoUrl(sectionDto.getVideoUrl());
                 course.getSections().add(section);
             });
         }

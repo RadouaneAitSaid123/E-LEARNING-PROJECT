@@ -46,6 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/courses/available").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/images/**", "/images/courses/**").permitAll()
+                        .requestMatchers("/assets/videos/**").permitAll()
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/resources/**").permitAll()
                         .anyRequest().authenticated()

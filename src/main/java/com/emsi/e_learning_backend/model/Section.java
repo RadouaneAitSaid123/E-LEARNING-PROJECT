@@ -19,4 +19,6 @@ public class Section {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+    
+    private String videoUrl;
 }
