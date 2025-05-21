@@ -1,231 +1,330 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload, faVideo, faTimes } from '@fortawesome/free-solid-svg-icons';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import axios from 'axios';
+import styled from 'styled-components';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faUpload, faVideo, faTimes} from '@fortawesome/free-solid-svg-icons';
 
+// Composants stylisés
 const UploaderContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
+    width: 100%;
+    margin-bottom: 20px;
 `;
 
 const UploadArea = styled.div`
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: ${props => props.isDragging ? '#f0f8ff' : '#f9f9f9'};
-  
-  &:hover {
-    border-color: #0056D2;
-    background-color: #f0f8ff;
-  }
-`;
+    border: 2px dashed ${props => props.isDragging ? '#4a90e2' : '#ddd'};
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    background-color: ${props => props.isDragging ? 'rgba(74, 144, 226, 0.05)' : '#f9f9f9'};
+    cursor: pointer;
+    transition: all 0.3s ease;
 
-const VideoPreview = styled.div`
-  width: 100%;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  
-  video {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-`;
-
-const RemoveButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
+    &:hover {
+        background-color: rgba(74, 144, 226, 0.05);
+        border-color: #4a90e2;
+    }
 `;
 
 const UploadIcon = styled.div`
-  font-size: 2rem;
-  color: #0056D2;
-  margin-bottom: 1rem;
+    font-size: 2rem;
+    color: #6c757d;
+    margin-bottom: 10px;
 `;
 
 const UploadText = styled.p`
-  font-family: 'Montserrat', sans-serif;
-  font-size: 1rem;
-  color: #737373;
-  margin: 0;
-  text-align: center;
-`;
-
-const ErrorMessage = styled.p`
-  color: #e74c3c;
-  font-size: 0.9rem;
-  margin: 0.5rem 0 0 0;
+    margin: 0;
+    color: #6c757d;
 `;
 
 const ProgressContainer = styled.div`
-  width: 100%;
-  height: 6px;
-  background-color: #e0e0e0;
-  border-radius: 3px;
-  margin-top: 1rem;
-  overflow: hidden;
+    width: 100%;
+    margin-top: 15px;
 `;
 
 const ProgressBar = styled.div`
-  height: 100%;
-  background-color: #0056D2;
-  width: ${props => props.progress}%;
-  transition: width 0.3s ease;
+    height: 6px;
+    background-color: #4a90e2;
+    width: ${props => props.$progress}%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
 `;
 
-const VideoUploader = ({ onVideoUpload, initialVideo }) => {
-  const [videoUrl, setVideoUrl] = useState(initialVideo || '');
-  const [isDragging, setIsDragging] = useState(false);
-  const [error, setError] = useState('');
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-  
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-  
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleVideoUpload(files[0]);
+const VideoPreview = styled.div`
+    position: relative;
+    width: 100%;
+
+    video {
+        width: 100%;
+        border-radius: 4px;
+        background-color: #f9f9f9;
     }
-  };
-  
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      handleVideoUpload(file);
+`;
+
+const RemoveButton = styled.button`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.7);
     }
-  };
-  
-  const handleVideoUpload = async (file) => {
-    // Vérifier le type de fichier
-    if (!file.type.startsWith('video/')) {
-      setError('Veuillez sélectionner un fichier vidéo valide');
-      return;
-    }
-    
-    // Vérifier la taille du fichier (limite à 100MB)
-    if (file.size > 100 * 1024 * 1024) {
-      setError('La taille du fichier ne doit pas dépasser 100MB');
-      return;
-    }
-    
-    setError('');
-    setIsUploading(true);
-    
-    const formData = new FormData();
-    formData.append('video', file);
-    
-    try {
-      const response = await axios.post('http://localhost:8080/api/upload/video', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
+`;
+
+const ErrorMessage = styled.div`
+    color: #e74c3c;
+    margin-top: 10px;
+    font-size: 0.875rem;
+`;
+
+/**
+ * Composant d'upload de vidéo pour les sections de cours
+ * @param {Object} props
+ * @param {Function} props.onVideoUpload - Fonction appelée après l'upload réussi avec l'URL de la vidéo
+ * @param {String} props.initialVideo - URL initiale de la vidéo (si déjà téléchargée)
+ */
+const VideoUploader = ({onVideoUpload, initialVideo}) => {
+    const [isDragging, setIsDragging] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [videoUrl, setVideoUrl] = useState(null);
+    const [videoType, setVideoType] = useState('');
+    const [fileName, setFileName] = useState('');
+    const [error, setError] = useState('');
+
+    // Référence pour annuler la requête d'upload si nécessaire
+    const cancelTokenSource = useRef(null);
+
+    // Initialiser avec la vidéo existante si disponible
+    useEffect(() => {
+        if (initialVideo) {
+            setVideoUrl(initialVideo);
         }
-      });
-      
-      setVideoUrl(response.data.url);
-      onVideoUpload(response.data.url);
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de la vidéo:', error);
-      setError('Échec de l\'upload. Veuillez réessayer.');
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
-    }
-  };
-  
-  const removeVideo = () => {
-    setVideoUrl('');
-    onVideoUpload('');
-  };
-  
-  return (
-    <UploaderContainer>
-      {videoUrl ? (
-        <VideoPreview>
-          <video controls>
-            <source src={`http://localhost:8080${videoUrl}`} type="video/mp4" />
-            Votre navigateur ne supporte pas la lecture de vidéos.
-          </video>
-          <RemoveButton onClick={removeVideo}>
-            <FontAwesomeIcon icon={faTimes} />
-          </RemoveButton>
-        </VideoPreview>
-      ) : (
-        <>
-          <input 
-            type="file" 
-            id="video-upload" 
-            accept="video/*" 
-            onChange={handleFileChange} 
-            style={{ display: 'none' }} 
-          />
-          <UploadArea 
-            isDragging={isDragging}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onClick={() => document.getElementById('video-upload').click()}
-          >
-            <UploadIcon>
-              <FontAwesomeIcon icon={isUploading ? faVideo : faUpload} />
-            </UploadIcon>
-            <UploadText>
-              {isUploading 
-                ? 'Upload en cours...'
-                : 'Glissez et déposez votre vidéo ici ou cliquez pour parcourir'}
-            </UploadText>
-            {isUploading && (
-              <ProgressContainer>
-                <ProgressBar progress={uploadProgress} />
-              </ProgressContainer>
+    }, [initialVideo]);
+
+    // Gestion du drag & drop
+    const handleDragOver = useCallback((e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const handleDragLeave = useCallback((e) => {
+        e.preventDefault();
+        setIsDragging(false);
+    }, []);
+
+    const handleDrop = useCallback((e) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files.length > 0) {
+            handleFile(files[0]);
+        }
+    }, []);
+
+    // Validation du fichier
+    const validateFile = (file) => {
+        // Vérifier le type de fichier
+        if (!file.type.startsWith('video/')) {
+            setError('Le fichier doit être une vidéo.');
+            return false;
+        }
+
+        // Vérifier la taille du fichier (limite à 100MB)
+        if (file.size > 100 * 1024 * 1024) {
+            setError('La taille du fichier ne doit pas dépasser 100MB.');
+            return false;
+        }
+
+        return true;
+    };
+
+    // Gestion du changement de fichier
+    const handleFileChange = useCallback((e) => {
+        const file = e.target.files[0];
+        if (file) {
+            handleFile(file);
+        }
+        // Réinitialiser l'input pour permettre de sélectionner à nouveau le même fichier
+        e.target.value = '';
+    }, []);
+
+    // Traitement du fichier
+    const handleFile = useCallback((file) => {
+        setError('');
+
+        if (!validateFile(file)) {
+            return;
+        }
+
+        uploadFile(file);
+    }, []);
+
+    // Upload du fichier vers le backend
+    const uploadFile = async (file) => {
+        setIsUploading(true);
+        setUploadProgress(0);
+
+        // Créer un FormData pour envoyer le fichier
+        const formData = new FormData();
+        formData.append('video', file);
+
+        // Créer un token pour pouvoir annuler la requête si nécessaire
+        cancelTokenSource.current = axios.CancelToken.source();
+
+        try {
+            // Récupération du token d'authentification
+            const token = localStorage.getItem('token');
+            
+            const response = await axios.post('http://localhost:8080/api/upload/video', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
+                },
+                cancelToken: cancelTokenSource.current.token,
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(percentCompleted);
+                }
+            });
+
+            if (response.data.success) {
+                // Obtenir le chemin de la vidéo depuis la réponse
+                const serverPath = `http://localhost:8080${response.data.filePath}`;
+                setVideoUrl(serverPath);
+                setVideoType(response.data.mimeType);
+                setFileName(response.data.fileName);
+
+                // Notifier le parent du succès de l'upload
+                if (onVideoUpload) {
+                    onVideoUpload(serverPath);
+                }
+            } else {
+                setError(response.data.message || 'Une erreur est survenue lors de l\'upload.');
+            }
+        } catch (err) {
+            if (axios.isCancel(err)) {
+                setError('Upload annulé.');
+            } else {
+                setError(err.response?.data?.message || 'Erreur lors de l\'upload de la vidéo.');
+                console.error('Erreur d\'upload:', err);
+            }
+        } finally {
+            setIsUploading(false);
+            cancelTokenSource.current = null;
+        }
+    };
+
+    // Suppression de la vidéo
+    const removeVideo = async () => {
+        try {
+            // Annuler l'upload en cours si nécessaire
+            if (isUploading && cancelTokenSource.current) {
+                cancelTokenSource.current.cancel('Upload annulé par l\'utilisateur');
+                setIsUploading(false);
+                return;
+            }
+
+            // Si c'est une vidéo qui a été téléchargée dans cette session, la supprimer du serveur
+            if (fileName) {
+                const token = localStorage.getItem('token');
+                await axios.delete(`http://localhost:8080/api/upload/video?fileName=${encodeURIComponent(fileName)}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            }
+
+            // Réinitialiser l'état
+            setVideoUrl(null);
+            setVideoType('');
+            setFileName('');
+            setError('');
+
+            // Notifier le parent que la vidéo a été supprimée
+            if (onVideoUpload) {
+                onVideoUpload('');
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || 'Erreur lors de la suppression de la vidéo.');
+            console.error('Erreur de suppression:', err);
+        }
+    };
+    
+    // Fonction pour vérifier si la vidéo est chargée correctement
+    const handleVideoError = () => {
+        setError('Erreur lors du chargement de la vidéo. Veuillez réessayer.');
+        console.error('Erreur de chargement de la vidéo:', videoUrl);
+    };
+    
+    // Fonction pour confirmer que la vidéo est chargée correctement
+    const handleVideoLoaded = () => {
+        setError('');
+        console.log('Vidéo chargée avec succès:', videoUrl);
+    };
+
+    return (
+        <UploaderContainer>
+            {videoUrl ? (
+                <VideoPreview>
+                    <video 
+                        controls 
+                        src={videoUrl} 
+                        type={videoType || 'video/mp4'}
+                        onError={handleVideoError}
+                        onLoadedData={handleVideoLoaded}
+                    >
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                    <RemoveButton onClick={removeVideo}>
+                        <FontAwesomeIcon icon={faTimes}/>
+                    </RemoveButton>
+                </VideoPreview>
+            ) : (
+                <>
+                    <input
+                        type="file"
+                        id="video-upload"
+                        accept="video/*"
+                        onChange={handleFileChange}
+                        style={{display: 'none'}}
+                    />
+                    <UploadArea
+                        isDragging={isDragging}
+                        onDragOver={handleDragOver}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onClick={() => document.getElementById('video-upload').click()}
+                    >
+                        <UploadIcon>
+                            <FontAwesomeIcon icon={isUploading ? faVideo : faUpload}/>
+                        </UploadIcon>
+                        <UploadText>
+                            {isUploading
+                                ? 'Upload en cours...'
+                                : 'Glissez et déposez votre vidéo ici ou cliquez pour parcourir'}
+                        </UploadText>
+                        {isUploading && (
+                            <ProgressContainer>
+                                <ProgressBar $progress={uploadProgress}/>
+                            </ProgressContainer>
+                        )}
+                    </UploadArea>
+                </>
             )}
-          </UploadArea>
-        </>
-      )}
-      {error && <ErrorMessage>{error}</ErrorMessage>}
-    </UploaderContainer>
-  );
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+        </UploaderContainer>
+    );
 };
 
 export default VideoUploader;
